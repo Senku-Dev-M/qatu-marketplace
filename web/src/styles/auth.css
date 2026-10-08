@@ -1,0 +1,132 @@
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 680px;
+  gap: 10vw;
+  padding-top: 70px;
+  padding-bottom: 105px;
+}
+.auth-aside {
+  position: relative;
+  background: var(--ink);
+  color: #f5ead4;
+  padding: 75px 55px;
+  overflow: hidden;
+  min-height: 560px;
+}
+.auth-aside h1 {
+  font-size: clamp(3rem, 4.5vw, 5rem);
+  max-width: 450px;
+}
+.auth-aside h1 span {
+  color: var(--orange);
+}
+.auth-aside p {
+  max-width: 380px;
+  line-height: 1.8;
+  color: #c7d3c9;
+}
+.auth-art {
+  position: absolute;
+  right: 40px;
+  bottom: -80px;
+  width: 250px;
+  height: 250px;
+  background: #c97450;
+  border-radius: 50%;
+  color: #eedec7;
+  padding: 42px;
+  font-size: 4rem;
+}
+.auth-art small {
+  font:
+    700 0.75rem "DM Sans",
+    sans-serif;
+  line-height: 1.4;
+  letter-spacing: 0.18em;
+  display: block;
+}
+.auth-panel {
+  padding-top: 55px;
+  max-width: 430px;
+}
+.auth-panel h2 {
+  margin-bottom: 9px;
+}
+.auth-panel .muted {
+  font-size: 0.82rem;
+  margin-bottom: 28px;
+}
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.form-stack label,
+.buy-row label,
+.review-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.form-stack input,
+.form-stack textarea,
+.form-stack select,
+.buy-row input,
+.review-form input,
+.review-form select,
+.message-form input {
+  background: var(--paper);
+  border: 1px solid #d3d2c8;
+  color: var(--ink);
+  padding: 14px 15px;
+  outline-color: var(--orange);
+  min-height: 48px;
+}
+.form-stack textarea {
+  resize: vertical;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 0.73rem;
+  margin: 24px 0;
+}
+.divider:before,
+.divider:after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+}
+.google-button {
+  width: 100%;
+  height: 51px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  font-weight: 700;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+.google-mark {
+  font:
+    bold 1.25rem Georgia,
+    serif;
+  color: #4285f4;
+}
+.auth-note {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 26px;
+}
+.form-error {
+  color: #a44d31;
+  font-size: 0.82rem;
+  margin-top: 15px;
+}

@@ -1,0 +1,126 @@
+@media (max-width: 1050px) {
+  .hero {
+    min-height: 530px;
+  }
+  .hero-art {
+    height: 460px;
+  }
+}
+@media (max-width: 760px) {
+  .header {
+    height: auto;
+  }
+  .hero {
+    padding-top: 35px;
+  }
+  .hero-art {
+    height: 350px;
+    margin-top: 30px;
+    border-radius: 8px 70px 8px 8px;
+  }
+  .hero-sun {
+    width: 105px;
+    height: 105px;
+    right: 30px;
+  }
+  .hero-mountain {
+    height: 170px;
+    bottom: 60px;
+  }
+  .hero-mountain--back {
+    bottom: 95px;
+  }
+  .hero-stall {
+    bottom: 10px;
+    height: 175px;
+    left: 16%;
+    width: 65%;
+  }
+  .stall-awning {
+    height: 47px;
+  }
+  .stall-shelf {
+    height: 107px;
+    padding: 10px;
+    gap: 6px;
+  }
+  .stall-bottle {
+    height: 61px;
+    width: 25px;
+  }
+  .stall-bottle:nth-child(2) {
+    height: 52px;
+  }
+  .stall-can {
+    height: 49px;
+    width: 31px;
+  }
+  .stall-bag {
+    height: 56px;
+    width: 40px;
+  }
+  .hero-llama {
+    width: 70px;
+    height: 70px;
+    right: 1%;
+  }
+  .art-note {
+    font-size: 0.7rem;
+    bottom: 15px;
+    left: 15px;
+  }
+  .product-visual {
+    height: 230px;
+  }
+  .auth-panel {
+    margin-top: 25px;
+    max-width: none;
+  }
+  .auth-art {
+    bottom: 18px;
+  }
+  .detail-image {
+    min-height: 360px;
+  }
+  .seller-columns {
+    display: block;
+  }
+}
+@media (max-width: 480px) {
+  .product-grid {
+    gap: 12px;
+  }
+  .product-card {
+    padding: 5px 5px 11px;
+  }
+  .product-visual {
+    height: 170px;
+  }
+  .product-package--bottle {
+    transform: rotate(-6deg) scale(0.72);
+  }
+  .product-package--can,
+  .product-package--pack,
+  .product-package--bag,
+  .product-package--bar {
+    transform: rotate(-6deg) scale(0.73);
+  }
+  .product-card h3 {
+    font-size: 0.98rem;
+  }
+  .product-bottom strong {
+    font-size: 0.92rem;
+  }
+  .product-meta {
+    font-size: 0.52rem;
+  }
+  .product-art-caption {
+    display: none;
+  }
+  .auth-panel {
+    padding: 25px;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 11vw, 4.3rem);
+  }
+}

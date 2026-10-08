@@ -1,0 +1,41 @@
+.detail-grid {
+  gap: 5vw;
+}
+.detail-image {
+  min-height: 540px;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #fff;
+}
+.detail-image img {
+  object-fit: contain;
+  padding: 30px;
+}
+.product-art--detail .product-package {
+  transform: rotate(-6deg) scale(1.65);
+}
+.product-art--detail .product-package--bar {
+  transform: rotate(-11deg) scale(1.65);
+}
+.product-art--detail .package-band span {
+  font-size: 0.85rem;
+}
+.detail-price {
+  color: #ad4733;
+  font-size: 1.8rem;
+}
+.detail-price small {
+  font:
+    500 0.77rem "DM Sans",
+    sans-serif;
+  color: var(--muted);
+}
+.detail-facts {
+  color: #415649;
+  font-weight: 700;
+}
+.detail-shop {
+  font-size: 0.73rem;
+  color: var(--muted);
+  margin: -8px 0 25px;
+}

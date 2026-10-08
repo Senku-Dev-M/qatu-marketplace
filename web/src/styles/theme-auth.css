@@ -1,0 +1,69 @@
+.auth-aside {
+  border-radius: 9px;
+  background: linear-gradient(145deg, #2b493c, #24372f);
+}
+.auth-art {
+  border-radius: 12px 80px 12px 12px;
+  right: 30px;
+  bottom: 28px;
+  width: 210px;
+  height: 196px;
+  padding: 0;
+  background: #ead7b8;
+  display: block;
+  overflow: hidden;
+}
+.auth-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.auth-art small {
+  position: absolute;
+  right: 8px;
+  bottom: 9px;
+  font-size: 0.48rem;
+  color: #1e3d34;
+  background: #f7e8c7e6;
+  padding: 6px 8px;
+  border-radius: 3px;
+}
+.auth-panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 38px;
+  border-radius: 9px;
+  align-self: start;
+  max-width: 470px;
+}
+.google-button {
+  border-color: #747775;
+  color: #1f1f1f;
+  background: #fff;
+  gap: 10px;
+  font-size: 0.78rem;
+}
+.google-button:hover {
+  background: #f8f9fa;
+  border-color: #444746;
+}
+.google-button img {
+  width: 40px;
+  height: 40px;
+}
+.form-stack input,
+.form-stack textarea,
+.form-stack select,
+.buy-row input,
+.review-form input,
+.review-form select,
+.message-form input {
+  border-radius: 6px;
+}
+.paper-card,
+.checkout-card,
+.order-card,
+.request-card,
+.inbox-layout {
+  border-radius: 8px;
+}

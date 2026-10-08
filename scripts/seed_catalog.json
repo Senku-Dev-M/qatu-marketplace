@@ -1,0 +1,233 @@
+[
+  {
+    "name": "Arroz Ovando Premium",
+    "brand": "Ovando",
+    "category": "Despensa",
+    "presentation": "1 kg",
+    "unit": "bolsa",
+    "priceBob": 13.9,
+    "stock": 64,
+    "description": "Arroz blanco tipo 1 para las comidas de todos los días.",
+    "imageFile": "arroz-ovando.jpg"
+  },
+  {
+    "name": "Tallarín Lazzaroni",
+    "brand": "Lazzaroni",
+    "category": "Despensa",
+    "presentation": "1 kg",
+    "unit": "paquete",
+    "priceBob": 16.2,
+    "stock": 48,
+    "description": "Pasta larga para sopas y platos con salsa.",
+    "imageFile": "tallarin-lazzaroni.jpg"
+  },
+  {
+    "name": "Oreo Original",
+    "brand": "Oreo",
+    "category": "Snacks",
+    "presentation": "108 g",
+    "unit": "tubo",
+    "priceBob": 9.8,
+    "stock": 52,
+    "description": "Galletas de cacao con relleno de crema.",
+    "imageFile": "oreo-108g.jpg"
+  },
+  {
+    "name": "Cremosita Chocolate",
+    "brand": "Mabel's",
+    "category": "Snacks",
+    "presentation": "6 × 38 g",
+    "unit": "paquete",
+    "priceBob": 15.5,
+    "stock": 36,
+    "description": "Galletas rellenas de chocolate en paquete de seis.",
+    "imageFile": "cremosita-chocolate.jpg"
+  },
+  {
+    "name": "Chocolate con Leche Breick",
+    "brand": "Breick",
+    "category": "Snacks",
+    "presentation": "100 g",
+    "unit": "tableta",
+    "priceBob": 22.5,
+    "stock": 27,
+    "description": "Tableta de chocolate con leche para compartir o regalar.",
+    "imageFile": "breick-leche.jpg"
+  },
+  {
+    "name": "Limpiador Ola Aromatic Floral",
+    "brand": "Ola",
+    "category": "Limpieza",
+    "presentation": "1,8 L",
+    "unit": "botella",
+    "priceBob": 34.8,
+    "stock": 30,
+    "description": "Limpiador líquido multiuso con fragancia floral.",
+    "imageFile": "ola-aromatic.jpg"
+  },
+  {
+    "name": "Agua Tónica Mendocina",
+    "brand": "Mendocina",
+    "category": "Bebidas",
+    "presentation": "1 L",
+    "unit": "botella",
+    "priceBob": 6.8,
+    "stock": 44,
+    "description": "Agua tónica gasificada para servir fría.",
+    "imageFile": "mendocina-tonica.jpg"
+  },
+  {
+    "name": "Agua Vital sin Gas",
+    "brand": "Vital",
+    "category": "Bebidas",
+    "presentation": "2 L",
+    "unit": "botella",
+    "priceBob": 7.9,
+    "stock": 72,
+    "description": "Agua purificada sin gas en formato familiar.",
+    "imageFile": "vital-sin-gas-2l.jpg"
+  },
+  {
+    "name": "Agua Vital con Gas",
+    "brand": "Vital",
+    "category": "Bebidas",
+    "presentation": "600 ml",
+    "unit": "botella",
+    "priceBob": 4.6,
+    "stock": 85,
+    "description": "Agua purificada con gas para llevar.",
+    "imageFile": "vital-con-gas-600ml.jpg"
+  },
+  {
+    "name": "Agua Vital sin Gas",
+    "brand": "Vital",
+    "category": "Bebidas",
+    "presentation": "600 ml",
+    "unit": "botella",
+    "priceBob": 4.5,
+    "stock": 96,
+    "description": "Agua purificada sin gas en formato personal.",
+    "imageFile": "vital-sin-gas-600ml.jpg"
+  },
+  {
+    "name": "Jugo Del Valle Durazno",
+    "brand": "Del Valle",
+    "category": "Bebidas",
+    "presentation": "300 ml",
+    "unit": "botella",
+    "priceBob": 4.0,
+    "stock": 75,
+    "description": "Bebida de durazno para la merienda o el camino.",
+    "imageFile": "del-valle-durazno.jpg"
+  },
+  {
+    "name": "Aquarius Pera",
+    "brand": "Aquarius",
+    "category": "Bebidas",
+    "presentation": "300 ml",
+    "unit": "botella",
+    "priceBob": 4.0,
+    "stock": 56,
+    "description": "Bebida refrescante con sabor a pera.",
+    "imageFile": "aquarius-pera.jpg"
+  },
+  {
+    "name": "Activade Frambuesa",
+    "brand": "Activade",
+    "category": "Bebidas",
+    "presentation": "600 ml",
+    "unit": "botella",
+    "priceBob": 5.95,
+    "stock": 42,
+    "description": "Bebida isotónica sabor frambuesa para hidratarte.",
+    "imageFile": "activade-frambuesa.jpg"
+  },
+  {
+    "name": "Powerade Mora Azul",
+    "brand": "Powerade",
+    "category": "Bebidas",
+    "presentation": "990 ml",
+    "unit": "botella",
+    "priceBob": 10.9,
+    "stock": 39,
+    "description": "Bebida deportiva sabor mora azul.",
+    "imageFile": "powerade-mora.jpg"
+  },
+  {
+    "name": "Monster Energy Original",
+    "brand": "Monster",
+    "category": "Bebidas",
+    "presentation": "473 ml",
+    "unit": "lata",
+    "priceBob": 25.0,
+    "stock": 24,
+    "description": "Bebida energética original en lata individual.",
+    "imageFile": "monster-original.jpg"
+  },
+  {
+    "name": "Fanta Papaya",
+    "brand": "Fanta",
+    "category": "Bebidas",
+    "presentation": "500 ml",
+    "unit": "botella",
+    "priceBob": 6.0,
+    "stock": 66,
+    "description": "Gaseosa sabor papaya, lista para servir fría.",
+    "imageFile": "fanta-papaya.jpg"
+  },
+  {
+    "name": "Fanta Naranja",
+    "brand": "Fanta",
+    "category": "Bebidas",
+    "presentation": "500 ml",
+    "unit": "botella",
+    "priceBob": 6.0,
+    "stock": 67,
+    "description": "Gaseosa con sabor a naranja en botella personal.",
+    "imageFile": "fanta-naranja.jpg"
+  },
+  {
+    "name": "Sprite Original",
+    "brand": "Sprite",
+    "category": "Bebidas",
+    "presentation": "500 ml",
+    "unit": "botella",
+    "priceBob": 6.0,
+    "stock": 70,
+    "description": "Gaseosa lima-limón en botella personal.",
+    "imageFile": "sprite-500ml.jpg"
+  },
+  {
+    "name": "Pepsi Original",
+    "brand": "Pepsi",
+    "category": "Bebidas",
+    "presentation": "500 ml",
+    "unit": "botella",
+    "priceBob": 5.0,
+    "stock": 81,
+    "description": "Gaseosa cola original para acompañar tus comidas.",
+    "imageFile": "pepsi-500ml.jpg"
+  },
+  {
+    "name": "Coca-Cola sin Azúcar",
+    "brand": "Coca-Cola",
+    "category": "Bebidas",
+    "presentation": "500 ml",
+    "unit": "botella",
+    "priceBob": 6.0,
+    "stock": 78,
+    "description": "Gaseosa cola sin azúcar en botella personal.",
+    "imageFile": "coca-cola-sin-azucar.jpg"
+  },
+  {
+    "name": "Coca-Cola Original",
+    "brand": "Coca-Cola",
+    "category": "Bebidas",
+    "presentation": "500 ml",
+    "unit": "botella",
+    "priceBob": 6.0,
+    "stock": 92,
+    "description": "Gaseosa cola clásica en botella personal.",
+    "imageFile": "coca-cola-original.jpg"
+  }
+]

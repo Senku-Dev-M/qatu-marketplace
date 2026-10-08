@@ -1,0 +1,93 @@
+.footer {
+  background: var(--ink);
+  color: #e8e2d4;
+  padding: 47px 0;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 25px;
+}
+.footer strong {
+  font:
+    600 2.3rem "Fraunces",
+    Georgia,
+    serif;
+  letter-spacing: -0.08em;
+}
+.footer strong span {
+  color: var(--orange);
+}
+.footer p {
+  font-size: 0.75rem;
+  color: #bdc8b8;
+  margin: 7px 0 0;
+}
+.footer a {
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+.inner-section {
+  padding: 65px 0 120px;
+}
+.inner-section h1 {
+  margin-bottom: 12px;
+}
+.section-lead {
+  color: var(--muted);
+  margin-bottom: 42px;
+}
+.narrow-section {
+  max-width: 800px;
+  padding: 75px 0 125px;
+}
+.state-card {
+  padding: 110px 0;
+  text-align: center;
+  min-height: 430px;
+}
+.state-card h1 {
+  font-size: 3rem;
+}
+.state-card p {
+  color: var(--muted);
+}
+.state-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  background: #efc8ae;
+  border-radius: 50%;
+  font-size: 2rem;
+}
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #c9d2c5;
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+.empty {
+  border: 1px dashed #c7c7b8;
+  text-align: center;
+  padding: 70px 24px;
+  background: #f9f6ef;
+}
+.empty > span {
+  font-size: 3rem;
+  color: var(--orange);
+}
+.empty h3 {
+  margin: 13px 0 8px;
+}
+.empty p {
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.empty .button {
+  margin-top: 13px;
+}

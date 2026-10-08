@@ -1,0 +1,13 @@
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/__pycache__
+**/.env
+**/.env.*
+!**/.env.example
+**/.git
+**/test-results
+**/playwright-report
+infra/supabase/volumes/db/data
+infra/supabase/volumes/storage

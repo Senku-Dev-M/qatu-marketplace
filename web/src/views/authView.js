@@ -1,0 +1,9 @@
+import { esc } from "../utils/format.js";
+
+export function authView(state) {
+  return `<section class="auth-layout wrap"><div class="auth-aside"><span class="eyebrow">BIENVENIDO A QATU</span><h1>Tu lugar en el mercado<span>.</span></h1><p>Encuentra lo que necesitas, conversa con vendedores y participa en un katu hecho para cada día.</p><div class="auth-art"><img src="/art/llama-mascot.png" alt="Llamita de Qatu" /><small>EL MERCADO<br>ESTÁ CERCA</small></div></div>
+    <div class="auth-panel"><p class="eyebrow">${state.mode === "register" ? "CREA TU CUENTA" : "QUÉ BUENO VERTE"}</p><h2>${state.mode === "register" ? "Únete a Qatu" : "Inicia sesión"}</h2><p class="muted">${state.mode === "register" ? "Ya tienes cuenta?" : "¿Todavía no tienes cuenta?"} <button id="auth-toggle" class="link-button">${state.mode === "register" ? "Entrar" : "Regístrate"}</button></p>
+      <form id="auth-form" class="form-stack">${state.mode === "register" ? '<label>Tu nombre<input name="name" autocomplete="name" required maxlength="80" placeholder="¿Cómo te llamas?"></label>' : ""}<label>Correo electrónico<input type="email" name="email" autocomplete="email" required placeholder="tu@correo.com"></label><label>Contraseña<input type="password" name="password" autocomplete="${state.mode === "register" ? "new-password" : "current-password"}" required minlength="6" placeholder="Mínimo 6 caracteres"></label><button class="button button--dark button--wide" type="submit">${state.mode === "register" ? "Crear cuenta" : "Entrar a Qatu"} <span>↗</span></button></form>
+      <div class="divider"><span>o continúa con</span></div><button id="google-login" class="google-button" type="button"><img src="/art/google-g.svg" alt="" /> Continuar con Google</button>${state.error ? `<p class="form-error">${esc(state.error)}</p>` : ""}
+      <p class="auth-note">Demo académica: nunca pedimos datos reales de pago.</p></div></section>`;
+}

@@ -1,0 +1,25 @@
+.seller-columns {
+  grid-template-columns: minmax(330px, 400px) 1fr;
+}
+.shop-seal {
+  border: 2px solid var(--orange);
+  transform: rotate(9deg);
+}
+.seller-product-icon {
+  border-radius: 6px;
+  background: #efe0bd;
+  color: #945544;
+}
+.stats-grid > div {
+  border-radius: 7px;
+}
+.conversation-avatar {
+  background: #b65b40;
+}
+.conversation-item.selected,
+.conversation-item:hover {
+  background: #f3e9d8;
+}
+.message.mine {
+  background: #d8e8d6;
+}

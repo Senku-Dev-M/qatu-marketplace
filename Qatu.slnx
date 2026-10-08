@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Qatu.Api/Qatu.Api.csproj" />
+    <Project Path="src/Qatu.Application/Qatu.Application.csproj" />
+    <Project Path="src/Qatu.Domain/Qatu.Domain.csproj" />
+    <Project Path="src/Qatu.Infrastructure/Qatu.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Qatu.Tests/Qatu.Tests.csproj" />
+  </Folder>
+</Solution>

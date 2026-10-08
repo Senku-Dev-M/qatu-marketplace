@@ -1,0 +1,88 @@
+/* Qatu: a quiet commercial language drawn from highland earth, market awnings and woven edges. */
+:root {
+  --ink: #25352f;
+  --cream: #f7f2e8;
+  --paper: #fffcf5;
+  --orange: #b64d35;
+  --line: #dcd3c3;
+  --muted: #647169;
+  --maize: #e5b35f;
+  --sky: #91b9bd;
+  color: var(--ink);
+  background: var(--cream);
+}
+body {
+  min-width: 0;
+  background:
+    radial-gradient(circle at 92% 2%, #f6e8cc 0, transparent 24%), var(--cream);
+}
+:focus-visible {
+  outline: 3px solid #bb603c;
+  outline-offset: 3px;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.045em;
+}
+.announcement {
+  background: #283a32;
+  color: #f3e5ca;
+  border-bottom: 4px solid transparent;
+  border-image: repeating-linear-gradient(
+      90deg,
+      #bb563d 0 28px,
+      #e5b35f 28px 49px,
+      #92b6b9 49px 72px,
+      #e9d0a0 72px 84px
+    )
+    1;
+}
+.header {
+  height: 91px;
+}
+.brand {
+  gap: 12px;
+  letter-spacing: -0.065em;
+}
+.brand-mark {
+  border-radius: 12px;
+  width: 47px;
+  height: 47px;
+  background: #b64d35;
+  padding: 0;
+  overflow: hidden;
+  transform: none;
+}
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.brand small {
+  letter-spacing: 0.1em;
+  font-size: 0.49rem;
+  margin-top: 8px;
+}
+.nav a {
+  color: #485b50;
+}
+.nav a:hover,
+.nav a.active {
+  color: var(--orange);
+}
+.button,
+.outline-button,
+.google-button,
+.chip {
+  border-radius: 7px;
+}
+.button {
+  box-shadow: 0 3px 0 #23342d24;
+}
+.button:hover {
+  background: #993d2a;
+}
+.button--dark:hover {
+  background: #3d5549;
+}
