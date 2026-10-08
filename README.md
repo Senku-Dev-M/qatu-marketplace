@@ -95,9 +95,9 @@ Database migrations run when the API starts.
 Python 3 is required for the helper scripts.
 
 ```powershell
-python scripts/seed_demo.py accounts --hosted
+python scripts/seed_demo.py accounts
 docker compose --env-file infra/hosted/.env -f infra/hosted/compose.yml up -d --no-deps --force-recreate api
-python scripts/seed_demo.py content --hosted
+python scripts/seed_demo.py content
 ```
 
 The script creates local demo configuration in ignored files. Do not publish generated passwords or user exports.
@@ -138,6 +138,7 @@ dotnet test Qatu.slnx
 
 cd web
 npm ci
+npm test
 npm run build
 npm run format:check
 ```
@@ -145,9 +146,9 @@ npm run format:check
 With the hosted stack running, the integration checks can also be executed:
 
 ```powershell
-python scripts/test_live.py --hosted
+python scripts/test_live.py
 pip install -r scripts/requirements-dev.txt
-python scripts/test_signalr.py --hosted
+python scripts/test_signalr.py
 ```
 
 ## Project structure
@@ -159,11 +160,21 @@ src/Qatu.Infrastructure/   EF Core, repositories, migrations, and image storage
 src/Qatu.Api/              REST endpoints, authentication, configuration, and SignalR
 web/src/                   SPA views, view models, components, state, and styles
 tests/Qatu.Tests/          Automated backend tests
-infra/hosted/              Docker Compose configuration for hosted Supabase
-infra/supabase/            Optional self-hosted Supabase reference configuration
+infra/hosted/              API/web deployment connected to Supabase Cloud
 scripts/                   Demo seed and integration-test helpers
 docs/                      Architecture and project documentation
 ```
+
+## Architecture
+
+The backend follows Clean Architecture dependency rules:
+
+- **Domain** contains entities and business enums without framework dependencies.
+- **Application** exposes focused use-case contracts (`ICatalogService`, `IOrderService`, `ISellerService`, and the other feature services) and small persistence ports for reads, writes, transactions, and stock operations.
+- **Infrastructure** implements those ports with Entity Framework Core and Supabase Storage.
+- **API** is the composition root. Endpoints depend only on the feature contract they use, while authentication delegates profile creation and access checks to the application layer.
+
+The frontend follows MVVM with explicit dependency injection. Pure view functions render only the state passed by their ViewModel. ViewModels coordinate UI behavior through feature services, and `createApplication.js` is the single composition root for API, authentication, state, navigation, and notifications. `ViewModelFactory` owns route-to-ViewModel creation, keeping `main.js` limited to application startup and lifecycle management.
 
 ## Security notes
 

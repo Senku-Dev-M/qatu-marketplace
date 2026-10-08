@@ -1,6 +1,6 @@
 # Catálogo de demostración
 
-`scripts/seed_catalog.json` define 21 artículos de minimarket y mercado boliviano: 15 bebidas y 6 artículos de snacks, despensa y limpieza. Cada registro incluye nombre comercial, marca, categoría, presentación, unidad de venta, precio en BOB, stock, descripción y fotografía asociada. Las fotos se obtuvieron de fichas públicas de producto; sus páginas y URLs exactas constan en `scripts/product_image_sources.json`. `scripts/seed_demo.py content --hosted` las carga mediante la API en el bucket privado. Un vendedor puede subir o reemplazar sus propias fotos mediante la carga de imágenes existente.
+`scripts/seed_catalog.json` define 21 artículos de minimarket y mercado boliviano: 15 bebidas y 6 artículos de snacks, despensa y limpieza. Cada registro incluye nombre comercial, marca, categoría, presentación, unidad de venta, precio en BOB, stock, descripción y fotografía asociada. Las fotos se obtuvieron de fichas públicas de producto; sus páginas y URLs exactas constan en `scripts/product_image_sources.json`. `scripts/seed_demo.py content` las carga mediante la API en el bucket privado de Supabase Cloud. Un vendedor puede subir o reemplazar sus propias fotos mediante la carga de imágenes existente.
 
 Los importes son aproximaciones para la **demo académica**, no cotizaciones ni inventario en tiempo real. Se contrastaron presentaciones y precios con comercios bolivianos:
 

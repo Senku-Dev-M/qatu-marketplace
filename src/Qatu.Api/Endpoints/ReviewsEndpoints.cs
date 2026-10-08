@@ -11,12 +11,12 @@ public static class ReviewsEndpoints
 {
     public static void MapReviews(this RouteGroupBuilder api, RouteGroupBuilder secured)
     {
-        api.MapGet("/sellers/{id:guid}/reviews", (Guid id, IMarketplaceService market) => market.SellerReviewsAsync(id));
+        api.MapGet("/sellers/{id:guid}/reviews", (Guid id, IReviewService reviews) => reviews.SellerReviewsAsync(id));
 
-        secured.MapPost("/reviews", (ClaimsPrincipal user, ReviewInput input, IMarketplaceService market) =>
+        secured.MapPost("/reviews", (ClaimsPrincipal user, ReviewInput input, IReviewService reviews) =>
         {
             if (!Enum.TryParse<ReviewKind>(input.Kind, true, out var kind) || !Enum.IsDefined(kind)) throw new MarketException(MarketError.Invalid, "Tipo de calificación inválido.");
-            return market.ReviewAsync(user.Id(), input.OrderId, kind, input.Stars, input.Comment);
+            return reviews.CreateAsync(user.Id(), input.OrderId, kind, input.Stars, input.Comment);
         });
     }
 }

@@ -25,12 +25,12 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  Endpoints[Endpoints REST] --> Contract[IMarketplaceService]
-  Hub[ChatHub] --> Contract
-  Contract --> Market[MarketplaceService]
-  Market --> Store[IAppRepository]
-  Market --> Images[IImageStore]
-  Store --> EF[EF Core]
+  Endpoints[Endpoints REST] --> UseCases[Servicios por capacidad]
+  Hub[ChatHub] --> Conversations[IConversationService]
+  UseCases --> Ports[Puertos de persistencia pequeños]
+  Conversations --> Ports
+  UseCases --> Images[IImageStore]
+  Ports --> EF[EF Core]
   Images --> Supabase[Storage API]
 ```
 
@@ -80,6 +80,6 @@ Los diagramas tienen fuente editable Mermaid en este archivo. Las seis vistas ex
 
 ## Organización del código
 
-El dominio mantiene cada entidad y enumeración en su propio archivo. La capa de aplicación declara `IMarketplaceService` y `IAppRepository`, e implementa `MarketplaceService` por capacidades mediante clases parciales (`Profiles`, `Catalog`, `Sellers`, `Products`, `Orders`, `Conversations`, `Reviews` y `Reports`). `Repositories`, `Storage`, `Models` y `Errors` contienen sus contratos y tipos individuales. Infraestructura agrupa persistencia, repositorio EF y Storage. La API registra rutas por capacidad en `Endpoints`, con `Contracts`, `Authentication` y `Hubs` separados; `Program.cs` contiene la composición, middleware y arranque. El README incluye el flujo PlantUML de Supabase Auth con Google y correo.
+El dominio mantiene cada entidad y enumeración en su propio archivo y no depende de frameworks. La capa de aplicación expone contratos pequeños por caso de uso: usuarios y acceso, catálogo, vendedores, productos, pedidos, conversaciones, reseñas y reportes. También aplica segregación de interfaces a la persistencia con `IReadRepository`, `IWriteRepository`, `IUnitOfWork` e `IStockRepository`. Infraestructura implementa esos puertos con EF Core y Supabase Storage. La API registra cada contrato e implementación en el punto de composición y cada endpoint recibe solo el servicio de la capacidad que utiliza.
 
-La SPA tiene un archivo por vista, componente y ViewModel. `main.js` conecta las rutas, mientras que `api`, `auth`, `state`, `data` y `utils` agrupan responsabilidades compartidas. Los estilos se importan por área y mantienen el orden de la cascada original: base, pantallas y ajustes de identidad/responsividad. `npm run format` y `npm run format:check` aplican y verifican el formato de JavaScript y CSS.
+La SPA tiene un archivo por vista, componente y ViewModel. Las vistas son funciones puras: reciben estado y no importan estado global, navegación ni acceso HTTP. Los ViewModels coordinan cada pantalla mediante servicios por capacidad. `createApplication.js` es el único punto de composición para API, autenticación, estado, navegación y notificaciones; `ViewModelFactory` resuelve rutas y crea ViewModels; `main.js` se limita al arranque y ciclo de vida. Los estilos se importan por área y mantienen el orden de la cascada original: base, pantallas y ajustes de identidad/responsividad. `npm run format` y `npm run format:check` aplican y verifican el formato de JavaScript y CSS.

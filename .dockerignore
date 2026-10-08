@@ -9,5 +9,3 @@
 **/.git
 **/test-results
 **/playwright-report
-infra/supabase/volumes/db/data
-infra/supabase/volumes/storage

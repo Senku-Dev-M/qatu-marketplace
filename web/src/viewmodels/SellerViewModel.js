@@ -1,20 +1,24 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import { api } from "../api/client.js";
-import { appState } from "../state/appState.js";
-import { requireLogin } from "../auth/session.js";
-import { toast } from "../components/toast.js";
 import { sellerView } from "../views/sellerView.js";
 
 export class SellerViewModel extends BaseViewModel {
-  constructor() {
+  constructor({ seller, state, auth, notifier }) {
     super();
-    this.state = { loading: true, shop: null, products: [], editing: null };
+    this.seller = seller;
+    this.auth = auth;
+    this.notifier = notifier;
+    this.state = {
+      loading: true,
+      shop: null,
+      products: [],
+      editing: null,
+      profile: state.profile,
+    };
   }
   async load() {
-    if (!requireLogin()) return;
-    if (appState.profile?.isSeller) {
-      this.state.shop = await api("/shops/mine");
-      this.state.products = await api("/products/mine");
+    if (!this.auth.requireLogin()) return;
+    if (this.state.profile?.isSeller) {
+      Object.assign(this.state, await this.seller.workspace());
     }
     this.state.loading = false;
     this.render();
@@ -29,11 +33,11 @@ export class SellerViewModel extends BaseViewModel {
         event.preventDefault();
         const data = Object.fromEntries(new FormData(sellerForm));
         try {
-          await api("/seller-applications", { method: "POST", body: data });
-          toast("Solicitud enviada. Un administrador la revisará.");
+          await this.seller.apply(data);
+          this.notifier("Solicitud enviada. Un administrador la revisará.");
           sellerForm.reset();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       });
     const productForm = this.el.querySelector("#product-form");
@@ -46,15 +50,12 @@ export class SellerViewModel extends BaseViewModel {
       data.priceBob = Number(data.priceBob);
       data.stock = Number(data.stock);
       try {
-        await api(id ? `/products/${id}` : "/products", {
-          method: id ? "PUT" : "POST",
-          body: data,
-        });
-        toast("Producto guardado.");
+        await this.seller.save(id, data);
+        this.notifier("Producto guardado.");
         this.state.editing = null;
         await this.load();
       } catch (error) {
-        toast(error.message, "error");
+        this.notifier(error.message, "error");
       }
     });
     this.el.querySelector("#cancel-edit")?.addEventListener("click", () => {
@@ -75,30 +76,25 @@ export class SellerViewModel extends BaseViewModel {
     this.el.querySelectorAll("[data-status]").forEach((button) =>
       button.addEventListener("click", async () => {
         try {
-          await api(`/products/${button.dataset.status}/status`, {
-            method: "POST",
-            body: { status: button.dataset.next },
-          });
+          await this.seller.setStatus(
+            button.dataset.status,
+            button.dataset.next,
+          );
           await this.load();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       }),
     );
     this.el.querySelectorAll("[data-upload]").forEach((input) =>
       input.addEventListener("change", async () => {
         if (!input.files[0]) return;
-        const formData = new FormData();
-        formData.set("file", input.files[0]);
         try {
-          await api(`/products/${input.dataset.upload}/image`, {
-            method: "POST",
-            formData,
-          });
-          toast("Imagen subida.");
+          await this.seller.uploadImage(input.dataset.upload, input.files[0]);
+          this.notifier("Imagen subida.");
           await this.load();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       }),
     );

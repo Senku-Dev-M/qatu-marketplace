@@ -1,39 +1,33 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import * as signalR from "@microsoft/signalr";
-import { api } from "../api/client.js";
-import { appState } from "../state/appState.js";
-import { requireLogin } from "../auth/session.js";
-import { toast } from "../components/toast.js";
 import { inboxView } from "../views/inboxView.js";
 
 export class InboxViewModel extends BaseViewModel {
-  constructor(id) {
+  constructor({ conversations, auth, notifier, state }, id) {
     super();
+    this.conversations = conversations;
+    this.auth = auth;
+    this.notifier = notifier;
     this.state = {
       loading: true,
       conversations: [],
       activeId: id,
       messages: [],
+      currentUserId: state.profile?.id ?? null,
     };
     this.connection = null;
   }
   async load() {
-    if (!requireLogin()) return;
-    this.state.conversations = await api("/conversations");
+    if (!this.auth.requireLogin()) return;
+    this.state.conversations = await this.conversations.list();
     if (this.state.activeId) await this.open(this.state.activeId);
     this.state.loading = false;
     this.render();
   }
   async open(id) {
     this.state.activeId = id;
-    this.state.messages = await api(`/conversations/${id}/messages`);
+    this.state.messages = await this.conversations.messages(id);
     if (this.connection) await this.connection.stop();
-    this.connection = new signalR.HubConnectionBuilder()
-      .withUrl("/hubs/chat", {
-        accessTokenFactory: () => appState.session?.access_token || "",
-      })
-      .withAutomaticReconnect()
-      .build();
+    this.connection = this.conversations.createConnection();
     this.connection.on("message", (message) => {
       if (message.conversationId !== this.state.activeId) return;
       if (!this.state.messages.some((existing) => existing.id === message.id))
@@ -44,7 +38,7 @@ export class InboxViewModel extends BaseViewModel {
     this.connection.onreconnected(() =>
       this.connection
         .invoke("Join", this.state.activeId)
-        .catch((error) => toast(error.message, "error")),
+        .catch((error) => this.notifier(error.message, "error")),
     );
     await this.connection.start();
     await this.connection.invoke("Join", id);
@@ -64,7 +58,7 @@ export class InboxViewModel extends BaseViewModel {
             `#/mensajes/${button.dataset.conversation}`,
           );
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       }),
     );
@@ -77,13 +71,10 @@ export class InboxViewModel extends BaseViewModel {
         if (!text) return;
         input.value = "";
         try {
-          await api(`/conversations/${this.state.activeId}/messages`, {
-            method: "POST",
-            body: { text },
-          });
+          await this.conversations.send(this.state.activeId, text);
         } catch (error) {
           input.value = text;
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       });
   }

@@ -1,22 +1,17 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import { api } from "../api/client.js";
-import { appState } from "../state/appState.js";
-import { requireLogin } from "../auth/session.js";
-import { toast } from "../components/toast.js";
 import { adminView } from "../views/adminView.js";
 
 export class AdminViewModel extends BaseViewModel {
-  constructor() {
+  constructor({ admin, auth, notifier }) {
     super();
+    this.admin = admin;
+    this.auth = auth;
+    this.notifier = notifier;
     this.state = { loading: true, report: null, applications: [] };
   }
   async load() {
-    if (!requireLogin()) return;
-    const [report, applications] = await Promise.all([
-      api("/admin/report"),
-      api("/seller-applications"),
-    ]);
-    Object.assign(this.state, { loading: false, report, applications });
+    if (!this.auth.requireLogin()) return;
+    Object.assign(this.state, await this.admin.dashboard(), { loading: false });
     this.render();
   }
   template() {
@@ -26,17 +21,14 @@ export class AdminViewModel extends BaseViewModel {
     this.el.querySelectorAll("[data-decision]").forEach((button) =>
       button.addEventListener("click", async () => {
         try {
-          await api(
-            `/seller-applications/${button.dataset.decision}/decision`,
-            {
-              method: "POST",
-              body: { approve: button.dataset.approve === "true" },
-            },
+          await this.admin.decide(
+            button.dataset.decision,
+            button.dataset.approve === "true",
           );
-          toast("Solicitud resuelta.");
+          this.notifier("Solicitud resuelta.");
           await this.load();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       }),
     );
@@ -45,20 +37,14 @@ export class AdminViewModel extends BaseViewModel {
       .addEventListener("click", async (event) => {
         event.preventDefault();
         try {
-          const response = await fetch("/api/admin/report.csv", {
-            headers: {
-              Authorization: `Bearer ${appState.session.access_token}`,
-            },
-          });
-          if (!response.ok) throw new Error("No se pudo descargar el reporte.");
-          const url = URL.createObjectURL(await response.blob());
+          const url = URL.createObjectURL(await this.admin.downloadReport());
           const link = document.createElement("a");
           link.href = url;
           link.download = "qatu-ventas.csv";
           link.click();
           URL.revokeObjectURL(url);
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       });
   }

@@ -20,10 +20,4 @@ CROWD.md
 .env
 .env.*
 !.env.example
-infra/supabase/.env
-infra/supabase/.env.old
-infra/supabase/volumes/db/data/
-infra/supabase/volumes/storage/
-infra/supabase/volumes/snippets/
-infra/supabase/backups/
 /infra/hosted/demo-users.txt

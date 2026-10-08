@@ -1,12 +1,12 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import { appState } from "../state/appState.js";
-import { go } from "../utils/navigation.js";
 import { authView } from "../views/authView.js";
-import { toast } from "../components/toast.js";
 
 export class AuthViewModel extends BaseViewModel {
-  constructor() {
+  constructor({ auth, notifier, navigate }) {
     super();
+    this.auth = auth;
+    this.notifier = notifier;
+    this.navigate = navigate;
     this.state = { loading: false, mode: "login", error: "" };
   }
   template() {
@@ -26,20 +26,16 @@ export class AuthViewModel extends BaseViewModel {
         try {
           const result =
             this.state.mode === "register"
-              ? await appState.client.auth.signUp({
-                  email: values.email,
-                  password: values.password,
-                  options: { data: { full_name: values.name } },
-                })
-              : await appState.client.auth.signInWithPassword({
+              ? await this.auth.signUp(values)
+              : await this.auth.signIn({
                   email: values.email,
                   password: values.password,
                 });
           if (result.error) throw result.error;
           if (result.data.session) {
-            toast("Bienvenido a Qatu.");
-            go("/");
-          } else toast("Revisa tu correo para confirmar la cuenta.");
+            this.notifier("Bienvenido a Qatu.");
+            this.navigate("/");
+          } else this.notifier("Revisa tu correo para confirmar la cuenta.");
         } catch (error) {
           this.state.error = error.message;
           this.render();
@@ -48,10 +44,7 @@ export class AuthViewModel extends BaseViewModel {
     this.el
       .querySelector("#google-login")
       .addEventListener("click", async () => {
-        const result = await appState.client.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: location.origin },
-        });
+        const result = await this.auth.signInWithGoogle();
         if (result.error) {
           this.state.error = result.error.message;
           this.render();

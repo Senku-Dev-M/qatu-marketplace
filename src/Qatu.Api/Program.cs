@@ -19,8 +19,19 @@ builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddScoped<IAppRepository, EfAppRepository>();
-builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
+builder.Services.AddScoped<EfAppRepository>();
+builder.Services.AddScoped<IReadRepository>(services => services.GetRequiredService<EfAppRepository>());
+builder.Services.AddScoped<IWriteRepository>(services => services.GetRequiredService<EfAppRepository>());
+builder.Services.AddScoped<IUnitOfWork>(services => services.GetRequiredService<EfAppRepository>());
+builder.Services.AddScoped<IStockRepository>(services => services.GetRequiredService<EfAppRepository>());
+builder.Services.AddScoped<IUserAccessService, UserAccessService>();
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<ISellerService, SellerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddSingleton(new MarketplaceOptions(adminUserId));
 builder.Services.AddSingleton(new SupabaseStorageOptions(serviceRoleKey));
 builder.Services.AddHttpClient("supabase", client => client.BaseAddress = new Uri(supabaseUrl.EndsWith('/') ? supabaseUrl : supabaseUrl + "/"));
@@ -41,8 +52,11 @@ app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
     {
         context.Response.StatusCode = market.Kind switch
         {
-            MarketError.Invalid => 400, MarketError.Forbidden => 403,
-            MarketError.NotFound => 404, MarketError.Conflict => 409, _ => 500
+            MarketError.Invalid => 400,
+            MarketError.Forbidden => 403,
+            MarketError.NotFound => 404,
+            MarketError.Conflict => 409,
+            _ => 500
         };
         await Results.Problem(market.Message, statusCode: context.Response.StatusCode).ExecuteAsync(context);
     }

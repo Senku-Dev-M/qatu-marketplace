@@ -11,14 +11,14 @@ public static class SellersEndpoints
 {
     public static void MapSellers(this RouteGroupBuilder secured)
     {
-        secured.MapPost("/seller-applications", (ClaimsPrincipal user, SellerApplicationInput input, IMarketplaceService market) =>
-            market.ApplySellerAsync(user.Id(), input.ShopName, input.Description));
+        secured.MapPost("/seller-applications", (ClaimsPrincipal user, SellerApplicationInput input, ISellerService sellers) =>
+            sellers.ApplyAsync(user.Id(), input.ShopName, input.Description));
 
-        secured.MapGet("/seller-applications", (ClaimsPrincipal user, IMarketplaceService market) => market.ApplicationsAsync(user.Id()));
+        secured.MapGet("/seller-applications", (ClaimsPrincipal user, ISellerService sellers) => sellers.ApplicationsAsync(user.Id()));
 
-        secured.MapPost("/seller-applications/{id:guid}/decision", (ClaimsPrincipal user, Guid id, DecisionInput input, IMarketplaceService market) =>
-            market.DecideApplicationAsync(user.Id(), id, input.Approve));
+        secured.MapPost("/seller-applications/{id:guid}/decision", (ClaimsPrincipal user, Guid id, DecisionInput input, ISellerService sellers) =>
+            sellers.DecideAsync(user.Id(), id, input.Approve));
 
-        secured.MapGet("/shops/mine", (ClaimsPrincipal user, IMarketplaceService market) => market.MyShopAsync(user.Id()));
+        secured.MapGet("/shops/mine", (ClaimsPrincipal user, ISellerService sellers) => sellers.MyShopAsync(user.Id()));
     }
 }

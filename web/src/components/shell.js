@@ -1,8 +1,6 @@
-import { appState } from "../state/appState.js";
 import { esc } from "../utils/format.js";
 
-export function shell(content) {
-  const profile = appState.profile;
+export function shell(content, profile = null) {
   return `
     <div class="site-shell">
       <div class="announcement"><span>QATU · TU KATU DIGITAL</span><span>Lo bueno del mercado, cerca de ti</span><span>BOLIVIA · Bs</span></div>

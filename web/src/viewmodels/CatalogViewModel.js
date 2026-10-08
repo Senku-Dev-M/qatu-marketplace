@@ -1,22 +1,21 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import { api } from "../api/client.js";
-import { toast } from "../components/toast.js";
 import { catalogView } from "../views/catalogView.js";
 
 export class CatalogViewModel extends BaseViewModel {
-  constructor() {
+  constructor({ catalog, notifier }) {
     super();
+    this.catalog = catalog;
+    this.notifier = notifier;
     this.state = { loading: true, products: [], query: "", category: "Todo" };
   }
   async load() {
     await this.fetchProducts();
   }
   async fetchProducts() {
-    const params = new URLSearchParams();
-    if (this.state.query) params.set("q", this.state.query);
-    if (this.state.category !== "Todo")
-      params.set("category", this.state.category);
-    this.state.products = await api(`/catalog?${params}`);
+    this.state.products = await this.catalog.search(
+      this.state.query,
+      this.state.category,
+    );
     this.state.loading = false;
     this.render();
   }
@@ -46,7 +45,7 @@ export class CatalogViewModel extends BaseViewModel {
           await this.fetchProducts();
           focusCatalog();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       });
     this.el.querySelectorAll("[data-category]").forEach((button) =>
@@ -56,7 +55,7 @@ export class CatalogViewModel extends BaseViewModel {
           await this.fetchProducts();
           focusCatalog();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       }),
     );

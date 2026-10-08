@@ -5,7 +5,7 @@ using Qatu.Domain;
 
 namespace Qatu.Infrastructure;
 
-public sealed class EfAppRepository(AppDbContext db) : IAppRepository
+public sealed class EfAppRepository(AppDbContext db) : IReadRepository, IWriteRepository, IUnitOfWork, IStockRepository
 {
     public Task<T?> FindAsync<T>(Guid id) where T : class => db.Set<T>().FindAsync(id).AsTask();
     public Task<List<T>> ListAsync<T>(Expression<Func<T, bool>> predicate) where T : class => db.Set<T>().Where(predicate).ToListAsync();

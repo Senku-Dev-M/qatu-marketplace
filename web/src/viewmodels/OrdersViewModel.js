@@ -1,17 +1,21 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import { api } from "../api/client.js";
-import { requireLogin } from "../auth/session.js";
-import { toast } from "../components/toast.js";
 import { ordersView } from "../views/ordersView.js";
 
 export class OrdersViewModel extends BaseViewModel {
-  constructor() {
+  constructor({ orders, auth, notifier, state }) {
     super();
-    this.state = { loading: true, orders: [] };
+    this.orders = orders;
+    this.auth = auth;
+    this.notifier = notifier;
+    this.state = {
+      loading: true,
+      orders: [],
+      currentUserId: state.profile?.id ?? null,
+    };
   }
   async load() {
-    if (!requireLogin()) return;
-    this.state.orders = await api("/orders");
+    if (!this.auth.requireLogin()) return;
+    this.state.orders = await this.orders.list();
     this.state.loading = false;
     this.render();
   }
@@ -24,19 +28,11 @@ export class OrdersViewModel extends BaseViewModel {
         event.preventDefault();
         const values = Object.fromEntries(new FormData(form));
         try {
-          await api("/reviews", {
-            method: "POST",
-            body: {
-              orderId: form.dataset.order,
-              kind: values.kind,
-              stars: Number(values.stars),
-              comment: values.comment,
-            },
-          });
-          toast("Gracias por compartir tu opinión.");
+          await this.orders.review(form.dataset.order, values);
+          this.notifier("Gracias por compartir tu opinión.");
           form.reset();
         } catch (error) {
-          toast(error.message, "error");
+          this.notifier(error.message, "error");
         }
       }),
     );

@@ -19,86 +19,67 @@ import "./styles/theme-auth.css";
 import "./styles/theme-detail.css";
 import "./styles/theme-dashboard.css";
 import "./styles/theme-responsive.css";
-import { initializeAuth } from "./auth/session.js";
 import { shell } from "./components/shell.js";
-import { toast } from "./components/toast.js";
-import { appState } from "./state/appState.js";
+import { createApplication } from "./composition/createApplication.js";
+import { ViewModelFactory } from "./routing/ViewModelFactory.js";
 import { esc } from "./utils/format.js";
-import { currentPath, go } from "./utils/navigation.js";
-import { AdminViewModel } from "./viewmodels/AdminViewModel.js";
-import { AuthViewModel } from "./viewmodels/AuthViewModel.js";
-import { CatalogViewModel } from "./viewmodels/CatalogViewModel.js";
-import { CheckoutViewModel } from "./viewmodels/CheckoutViewModel.js";
-import { InboxViewModel } from "./viewmodels/InboxViewModel.js";
-import { OrdersViewModel } from "./viewmodels/OrdersViewModel.js";
-import { PolicyViewModel } from "./viewmodels/PolicyViewModel.js";
-import { ProductViewModel } from "./viewmodels/ProductViewModel.js";
-import { SellerViewModel } from "./viewmodels/SellerViewModel.js";
+import { currentPath } from "./utils/navigation.js";
 
-let active = null;
+const application = createApplication();
+const viewModelFactory = new ViewModelFactory(application);
+let activeViewModel = null;
 let lastPath = null;
-
-function route(path) {
-  const clean = path.split("?")[0];
-  if (clean === "/") return new CatalogViewModel();
-  if (clean === "/acceso") return new AuthViewModel();
-  if (clean === "/privacidad") return new PolicyViewModel("privacy");
-  if (clean === "/condiciones") return new PolicyViewModel("terms");
-  if (clean === "/pedidos") return new OrdersViewModel();
-  if (clean === "/vender") return new SellerViewModel();
-  if (clean === "/admin") return new AdminViewModel();
-  if (clean === "/mensajes") return new InboxViewModel(null);
-  if (clean.startsWith("/mensajes/"))
-    return new InboxViewModel(clean.split("/")[2]);
-  if (clean.startsWith("/producto/"))
-    return new ProductViewModel(clean.split("/")[2]);
-  if (clean.startsWith("/pago/"))
-    return new CheckoutViewModel(clean.split("/")[2], path.split("?")[1] || "");
-  return new CatalogViewModel();
-}
 
 function render() {
   const path = currentPath();
-  if (path === lastPath && active) {
-    const actions = document.querySelector(".header-actions");
-    actions.innerHTML = appState.profile
-      ? `<span class="hello">Hola, ${esc(appState.profile.displayName)}</span><button type="button" class="text-button" id="sign-out">Salir ↗</button>`
-      : '<a class="button button--small" href="#/acceso">Entrar ↗</a>';
-    bindShell();
+  if (path === lastPath && activeViewModel) {
+    refreshHeader();
     return;
   }
-  active?.destroy();
+
+  activeViewModel?.destroy();
   lastPath = path;
-  document.querySelector("#app").innerHTML = shell("");
+  document.querySelector("#app").innerHTML = shell(
+    "",
+    application.state.profile,
+  );
   document.querySelectorAll("[data-nav]").forEach((link) => {
     if (link.dataset.nav === path) link.classList.add("active");
   });
   bindShell();
-  active = route(path);
-  active.mount(document.querySelector("#page"));
+  activeViewModel = viewModelFactory.create(path);
+  activeViewModel.mount(document.querySelector("#page"));
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
+function refreshHeader() {
+  const actions = document.querySelector(".header-actions");
+  if (!actions) return;
+  const profile = application.state.profile;
+  actions.innerHTML = profile
+    ? `<span class="hello">Hola, ${esc(profile.displayName)}</span><button type="button" class="text-button" id="sign-out">Salir ↗</button>`
+    : '<a class="button button--small" href="#/acceso">Entrar ↗</a>';
+  bindShell();
+}
+
 function bindShell() {
-  document.querySelector("#sign-out")?.addEventListener("click", async () => {
-    await appState.client.auth.signOut();
-    toast("Sesión cerrada.");
-    lastPath = null;
-    go("/");
-  });
+  document
+    .querySelector("#sign-out")
+    ?.addEventListener("click", () => application.auth.signOut());
+}
+
+function showConfigurationError(error) {
+  const page = document.querySelector("#page");
+  if (!page) return;
+  page.innerHTML = `<div class="wrap state-card"><h1>Qatu necesita configuración</h1><p>${esc(error.message)}</p><p>Revisa la API y la conexión con Supabase.</p></div>`;
 }
 
 window.addEventListener("hashchange", render);
-appState.subscribe(() => {
+application.state.subscribe(() => {
   lastPath = null;
   render();
 });
 document.querySelector("#app").innerHTML = shell(
   '<div class="wrap state-card"><span class="spinner"></span><p>Preparando Qatu...</p></div>',
 );
-initializeAuth()
-  .then(render)
-  .catch((error) => {
-    document.querySelector("#page").innerHTML =
-      `<div class="wrap state-card"><h1>Qatu necesita configuración</h1><p>${esc(error.message)}</p><p>Revisa la API y la conexión con Supabase.</p></div>`;
-  });
+application.auth.initialize().then(render).catch(showConfigurationError);

@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | ADR-01 | SPA en JavaScript y Vite, MVVM por pantalla | Expone los fundamentos web y la separación entre vista, estado y acciones sin framework. Las rutas se resuelven en cliente. |
 | ADR-02 | API .NET 10 con Domain, Application, Infrastructure y API | Las reglas y permisos quedan en casos de uso y son probables sin HTTP. EF Core migra únicamente el esquema `qatu`. |
-| ADR-03 | Supabase alojado en proyecto propio | Auth, PostgreSQL y Storage se administran en Supabase; Docker Compose solo levanta la SPA y la API. Se reduce la carga de contenedores locales. La API conecta por Session pooler con TLS y conserva SignalR para el chat. El Compose autohospedado queda como referencia de la primera iteración. |
+| ADR-03 | Supabase Cloud en proyecto propio | Auth, PostgreSQL y Storage se administran en Supabase Cloud; Docker Compose solo levanta la SPA y la API. Se reduce la carga de contenedores locales. La API conecta por Session pooler con TLS y conserva SignalR para el chat. |
 | ADR-04 | Token validado con Supabase Auth en cada petición | Revocación y estado de sesión quedan bajo Auth. Aumenta un salto interno por petición; se evita confiar en un token sin validación. |
 | ADR-05 | Pago simulado con resultado explícito | Demuestra estados, stock y calificaciones sin recibir tarjeta ni afirmar que existe cobro. |
 | ADR-06 | Roles y propiedad en la API | Supabase autentica, Qatu autoriza. El ID administrativo se configura fuera de Git antes de iniciar la API. |

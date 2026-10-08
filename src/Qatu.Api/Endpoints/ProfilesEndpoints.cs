@@ -11,6 +11,6 @@ public static class ProfilesEndpoints
 {
     public static void MapProfiles(this RouteGroupBuilder secured)
     {
-        secured.MapGet("/me", (ClaimsPrincipal user, IMarketplaceService market) => market.EnsureProfileAsync(user.Id(), user.Email(), user.Identity?.Name));
+        secured.MapGet("/me", (ClaimsPrincipal user, IUserAccessService users) => users.EnsureProfileAsync(user.Id(), user.Email(), user.Identity?.Name));
     }
 }

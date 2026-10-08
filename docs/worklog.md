@@ -2,11 +2,11 @@
 
 ## Semana 1 — alcance y fundamentos
 
-Se leyó el material disponible y se fijó un marketplace individual en tres fases. Se creó el backlog y se eligió SPA MVVM con JavaScript, API .NET 10 y Supabase local. Se definieron roles, estados, diagramas y criterios de aceptación.
+Se leyó el material disponible y se fijó un marketplace individual en tres fases. Se creó el backlog y se eligió SPA MVVM con JavaScript, API .NET 10 y servicios administrados en Supabase Cloud. Se definieron roles, estados, diagramas y criterios de aceptación.
 
 ## Semanas 2–3 — infraestructura e identidad
 
-Se preparó Compose con los servicios necesarios, secretos locales ignorados por Git, migración del esquema `qatu`, autenticación por correo, validación de token y perfil del comprador. El catálogo público y la búsqueda quedaron integrados.
+Se preparó Compose para la SPA y la API, secretos locales ignorados por Git, migración del esquema `qatu` en Supabase Cloud, autenticación por correo, validación de token y perfil del comprador. El catálogo público y la búsqueda quedaron integrados.
 
 ## Semanas 4–5 — recorrido intermedio
 
@@ -18,9 +18,9 @@ Se añadió chat con SignalR e historial, calificaciones vinculadas al pedido pa
 
 Esta secuencia es la trazabilidad de la implementación del proyecto, no una afirmación de trabajo ocurrido durante diez semanas reales. No hubo revisión de otro integrante; la revisión propia se consigna en `review.md`.
 
-## Ajuste de infraestructura — Supabase alojado
+## Integración con Supabase Cloud
 
-Por decisión del propietario, se creó una organización Free y un proyecto Qatu alojado en Supabase, además del proyecto Google Cloud `qatu-sd4`. Se separaron SPA/API en `infra/hosted/compose.yml`, se configuró el Session pooler y se ejecutó la migración EF. Se crearon cuentas y productos de demo en la nueva base. Las pruebas de integración alojada se registran en `test-results.md`.
+Por decisión del propietario, Qatu utiliza un proyecto administrado en Supabase Cloud y el proyecto Google Cloud `qatu-sd4`. SPA y API se ejecutan mediante `infra/hosted/compose.yml`, se configuró el Session pooler y se ejecutó la migración EF. Se crearon cuentas y productos de demo en la base administrada. Las pruebas de integración se registran en `test-results.md`.
 
 ## Refinamiento visual y autenticación — 29-09-2026
 
@@ -29,3 +29,7 @@ Se sustituyeron la escena y la marca dibujadas en CSS/SVG por recursos generados
 ## Organización del código — 29-09-2026
 
 Se separaron entidades, enumeraciones, contratos y rutas en archivos individuales. La API consume `IMarketplaceService`, el servicio usa `IAppRepository` e `IImageStore`, y las implementaciones quedaron agrupadas por persistencia, repositorio, almacenamiento, autenticación y hub. La SPA separa cada vista, ViewModel y componente; sus estilos conservan el mismo orden de cascada. El README documenta el flujo de autenticación con Google y correo en PlantUML. Las verificaciones concretas constan en `test-results.md`.
+
+## Refactor SOLID, Clean Architecture y MVVM — 08-10-2026
+
+El servicio general de marketplace se reemplazó por contratos y servicios por capacidad. La persistencia se segregó en puertos de lectura, escritura, transacción y stock, y cada endpoint depende solo del caso de uso que necesita. En la SPA, el cliente HTTP, autenticación y servicios de funcionalidades se inyectan desde un punto de composición; una fábrica crea los ViewModels y las vistas dejaron de importar estado global. Se conservaron las rutas y el comportamiento visible.

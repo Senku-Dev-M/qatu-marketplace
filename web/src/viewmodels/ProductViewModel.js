@@ -1,18 +1,19 @@
 import { BaseViewModel } from "./BaseViewModel.js";
-import { api } from "../api/client.js";
-import { go } from "../utils/navigation.js";
-import { requireLogin } from "../auth/session.js";
-import { toast } from "../components/toast.js";
 import { detailView } from "../views/detailView.js";
 
 export class ProductViewModel extends BaseViewModel {
-  constructor(id) {
+  constructor({ catalog, conversations, auth, navigate, notifier }, id) {
     super();
+    this.catalog = catalog;
+    this.conversations = conversations;
+    this.auth = auth;
+    this.navigate = navigate;
+    this.notifier = notifier;
     this.id = id;
     this.state = { loading: true, product: null, shopName: "", reviews: [] };
   }
   async load() {
-    Object.assign(this.state, await api(`/products/${this.id}`), {
+    Object.assign(this.state, await this.catalog.product(this.id), {
       loading: false,
     });
     this.render();
@@ -23,20 +24,17 @@ export class ProductViewModel extends BaseViewModel {
   bind() {
     this.el.querySelector("#buy-form")?.addEventListener("submit", (event) => {
       event.preventDefault();
-      if (!requireLogin()) return;
+      if (!this.auth.requireLogin()) return;
       const quantity = Number(new FormData(event.target).get("quantity"));
-      go(`/pago/${this.id}?qty=${quantity}`);
+      this.navigate(`/pago/${this.id}?qty=${quantity}`);
     });
     this.el.querySelector("#open-chat").addEventListener("click", async () => {
-      if (!requireLogin()) return;
+      if (!this.auth.requireLogin()) return;
       try {
-        const conversation = await api("/conversations", {
-          method: "POST",
-          body: { productId: this.id },
-        });
-        go(`/mensajes/${conversation.id}`);
+        const conversation = await this.conversations.open(this.id);
+        this.navigate(`/mensajes/${conversation.id}`);
       } catch (error) {
-        toast(error.message, "error");
+        this.notifier(error.message, "error");
       }
     });
   }
