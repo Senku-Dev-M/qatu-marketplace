@@ -14,7 +14,7 @@ public sealed class SupabaseAuthHandler(
     UrlEncoder encoder,
     IHttpClientFactory clients,
     SupabaseAuthOptions supabase,
-    IUserAccessService users) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+    EnsureUserProfileUseCase ensureUserProfile) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -38,7 +38,7 @@ public sealed class SupabaseAuthHandler(
             string? name = null;
             if (root.TryGetProperty("user_metadata", out var metadata) && metadata.ValueKind == JsonValueKind.Object && metadata.TryGetProperty("full_name", out var fullName))
                 name = fullName.GetString();
-            await users.EnsureProfileAsync(id, email, name);
+            await ensureUserProfile.ExecuteAsync(new EnsureUserProfileCommand(id, email, name));
             var claims = new[] { new Claim(ClaimTypes.NameIdentifier, id.ToString()), new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, name ?? email) };
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
             return AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme.Name));

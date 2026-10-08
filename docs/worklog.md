@@ -33,3 +33,7 @@ Se separaron entidades, enumeraciones, contratos y rutas en archivos individuale
 ## Refactor SOLID, Clean Architecture y MVVM — 08-10-2026
 
 El servicio general de marketplace se reemplazó por contratos y servicios por capacidad. La persistencia se segregó en puertos de lectura, escritura, transacción y stock, y cada endpoint depende solo del caso de uso que necesita. En la SPA, el cliente HTTP, autenticación y servicios de funcionalidades se inyectan desde un punto de composición; una fábrica crea los ViewModels y las vistas dejaron de importar estado global. Se conservaron las rutas y el comportamiento visible.
+
+## Casos de uso explícitos — 08-10-2026
+
+La capa de aplicación evolucionó de servicios con varias operaciones a comandos, consultas y una clase por caso de uso. Los endpoints ahora expresan directamente la intención que ejecutan —por ejemplo, crear un pedido, consultar el catálogo o aprobar un vendedor— mediante `ExecuteAsync`. Las políticas de acceso reutilizan las reglas de usuario, producto y conversación sin volver a introducir servicios generales. Se conservaron las rutas HTTP, los contratos de respuesta y los puertos hacia infraestructura.

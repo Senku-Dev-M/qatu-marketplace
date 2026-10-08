@@ -6,14 +6,14 @@ using Qatu.Application;
 namespace Qatu.Api;
 
 [Authorize]
-public sealed class ChatHub(IConversationService conversations) : Hub
+public sealed class ChatHub(AuthorizeConversationUseCase authorizeConversation) : Hub
 {
     public static string Group(Guid conversationId) => $"conversation:{conversationId:N}";
 
     public async Task Join(Guid conversationId)
     {
         var userId = Guid.Parse(Context.User!.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        await conversations.GetAsync(userId, conversationId);
+        await authorizeConversation.ExecuteAsync(userId, conversationId);
         await Groups.AddToGroupAsync(Context.ConnectionId, Group(conversationId));
     }
 

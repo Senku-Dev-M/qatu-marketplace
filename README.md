@@ -155,7 +155,7 @@ python scripts/test_signalr.py
 
 ```text
 src/Qatu.Domain/           Domain entities and enums
-src/Qatu.Application/      Use cases, contracts, and application services
+src/Qatu.Application/      Commands, queries, use cases, policies, and ports
 src/Qatu.Infrastructure/   EF Core, repositories, migrations, and image storage
 src/Qatu.Api/              REST endpoints, authentication, configuration, and SignalR
 web/src/                   SPA views, view models, components, state, and styles
@@ -170,9 +170,9 @@ docs/                      Architecture and project documentation
 The backend follows Clean Architecture dependency rules:
 
 - **Domain** contains entities and business enums without framework dependencies.
-- **Application** exposes focused use-case contracts (`ICatalogService`, `IOrderService`, `ISellerService`, and the other feature services) and small persistence ports for reads, writes, transactions, and stock operations.
+- **Application** exposes one explicit use case per business action (`PlaceOrderUseCase`, `ApplyAsSellerUseCase`, and the other commands and queries), reusable access policies, and small persistence ports for reads, writes, transactions, and stock operations.
 - **Infrastructure** implements those ports with Entity Framework Core and Supabase Storage.
-- **API** is the composition root. Endpoints depend only on the feature contract they use, while authentication delegates profile creation and access checks to the application layer.
+- **API** is the composition root. Each endpoint depends only on the use case it executes, while authentication delegates profile creation and access checks to the application layer.
 
 The frontend follows MVVM with explicit dependency injection. Pure view functions render only the state passed by their ViewModel. ViewModels coordinate UI behavior through feature services, and `createApplication.js` is the single composition root for API, authentication, state, navigation, and notifications. `ViewModelFactory` owns route-to-ViewModel creation, keeping `main.js` limited to application startup and lifecycle management.
 

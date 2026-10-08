@@ -41,3 +41,11 @@ La prueba de imagen en borrador confirmó que la API pública responde 404 para 
 - Se retiraron los 63 archivos de la distribución local de Supabase.
 - Los scripts de seed e integración ahora utilizan exclusivamente `infra/hosted/.env` y Supabase Cloud.
 - Docker Compose conserva únicamente los servicios de Qatu: API y web.
+
+## Casos de uso explícitos — 08-10-2026
+
+- La capa de aplicación reemplazó los servicios agrupados por comandos, consultas y una clase de caso de uso por acción.
+- Los endpoints y el hub dependen directamente del caso de uso que ejecutan; las reglas compartidas de autorización se concentran en políticas reutilizables.
+- `dotnet format Qatu.slnx --no-restore`: correcto.
+- `dotnet build Qatu.slnx --no-restore`: correcto, 0 advertencias y 0 errores.
+- `dotnet test Qatu.slnx --no-build`: 4/4 pruebas correctas usando directamente los nuevos casos de uso.

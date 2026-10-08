@@ -7,11 +7,16 @@ namespace Qatu.Tests;
 public sealed class MarketplaceTests
 {
     private readonly MemoryStore store = new();
-    private readonly ISellerService sellers;
-    private readonly IProductService products;
-    private readonly IOrderService orders;
-    private readonly IReviewService reviews;
-    private readonly IConversationService conversations;
+    private readonly ApplyAsSellerUseCase applyAsSeller;
+    private readonly DecideSellerApplicationUseCase decideSellerApplication;
+    private readonly CreateProductUseCase createProduct;
+    private readonly UpdateProductUseCase updateProduct;
+    private readonly ChangeProductStatusUseCase changeProductStatus;
+    private readonly PlaceOrderUseCase placeOrder;
+    private readonly CreateReviewUseCase createReview;
+    private readonly OpenConversationUseCase openConversation;
+    private readonly SendConversationMessageUseCase sendMessage;
+    private readonly GetConversationMessagesUseCase getMessages;
     private readonly Profile admin = new() { Email = "admin@test.local", IsAdmin = true };
     private readonly Profile seller = new() { Email = "seller@test.local" };
     private readonly Profile buyer = new() { Email = "buyer@test.local" };
@@ -20,25 +25,33 @@ public sealed class MarketplaceTests
     {
         admin.Id = Guid.NewGuid(); seller.Id = Guid.NewGuid(); buyer.Id = Guid.NewGuid();
         store.Add(admin); store.Add(seller); store.Add(buyer);
-        var users = new UserAccessService(store, store, store, new MarketplaceOptions(admin.Id));
-        var catalog = new CatalogService(store, new NoImages());
-        sellers = new SellerService(store, store, store, users);
-        products = new ProductService(store, store, store, users, new NoImages());
-        orders = new OrderService(store, store, store, store, users);
-        reviews = new ReviewService(store, store, store);
-        conversations = new ConversationService(store, store, store, users, catalog);
+        var users = new UserAccessPolicy(store);
+        var products = new ProductAccessPolicy(store);
+        var conversations = new ConversationAccessPolicy(store);
+        applyAsSeller = new ApplyAsSellerUseCase(store, store, store, users);
+        decideSellerApplication = new DecideSellerApplicationUseCase(store, store, store, users);
+        createProduct = new CreateProductUseCase(store, store, store, users);
+        updateProduct = new UpdateProductUseCase(store, users, products);
+        changeProductStatus = new ChangeProductStatusUseCase(store, users, products);
+        placeOrder = new PlaceOrderUseCase(store, store, store, store, users);
+        createReview = new CreateReviewUseCase(store, store, store);
+        openConversation = new OpenConversationUseCase(store, store, store, users, products);
+        sendMessage = new SendConversationMessageUseCase(store, store, conversations);
+        getMessages = new GetConversationMessagesUseCase(store, conversations);
     }
 
     [Fact]
     public async Task SellerRequiresApprovalAndCanOnlyEditOwnProducts()
     {
-        var denied = await Assert.ThrowsAsync<MarketException>(() => products.SaveAsync(seller.Id, null, "Vaso", "", "Hogar", 10, 1));
+        var denied = await Assert.ThrowsAsync<MarketException>(() => createProduct.ExecuteAsync(
+            new CreateProductCommand(seller.Id, Product("Vaso", 10, 1))));
         Assert.Equal(MarketError.Forbidden, denied.Kind);
-        var application = await sellers.ApplyAsync(seller.Id, "Tienda", "Cerámica");
-        await sellers.DecideAsync(admin.Id, application.Id, true);
+        var application = await applyAsSeller.ExecuteAsync(new ApplyAsSellerCommand(seller.Id, "Tienda", "Cerámica"));
+        await decideSellerApplication.ExecuteAsync(new DecideSellerApplicationCommand(admin.Id, application.Id, true));
         Assert.True(seller.IsSeller);
-        var product = await products.SaveAsync(seller.Id, null, "Vaso", "", "Hogar", 10, 2);
-        var other = await Assert.ThrowsAsync<MarketException>(() => products.SaveAsync(buyer.Id, product.Id, "Otro", "", "Hogar", 10, 1));
+        var product = await createProduct.ExecuteAsync(new CreateProductCommand(seller.Id, Product("Vaso", 10, 2)));
+        var other = await Assert.ThrowsAsync<MarketException>(() => updateProduct.ExecuteAsync(
+            new UpdateProductCommand(buyer.Id, product.Id, Product("Otro", 10, 1))));
         Assert.Equal(MarketError.Forbidden, other.Kind);
     }
 
@@ -46,10 +59,11 @@ public sealed class MarketplaceTests
     public async Task FailedPaymentKeepsStockAndCannotBeReviewed()
     {
         var product = await PublishedProductAsync(3);
-        var order = await orders.BuyAsync(buyer.Id, product.Id, 2, false);
+        var order = await placeOrder.ExecuteAsync(new PlaceOrderCommand(buyer.Id, product.Id, 2, false));
         Assert.Equal(OrderStatus.Failed, order.Status);
         Assert.Equal(3, product.Stock);
-        var denied = await Assert.ThrowsAsync<MarketException>(() => reviews.CreateAsync(buyer.Id, order.Id, ReviewKind.Product, 5, "Bien"));
+        var denied = await Assert.ThrowsAsync<MarketException>(() => createReview.ExecuteAsync(
+            new CreateReviewCommand(buyer.Id, order.Id, ReviewKind.Product, 5, "Bien")));
         Assert.Equal(MarketError.Forbidden, denied.Kind);
     }
 
@@ -57,14 +71,17 @@ public sealed class MarketplaceTests
     public async Task PaidOrderDecrementsStockAndAllowsOneReview()
     {
         var product = await PublishedProductAsync(2);
-        var order = await orders.BuyAsync(buyer.Id, product.Id, 2, true);
+        var order = await placeOrder.ExecuteAsync(new PlaceOrderCommand(buyer.Id, product.Id, 2, true));
         Assert.Equal(OrderStatus.Paid, order.Status);
         Assert.Equal(0, product.Stock);
-        var review = await reviews.CreateAsync(buyer.Id, order.Id, ReviewKind.Product, 4, "Útil");
+        var review = await createReview.ExecuteAsync(
+            new CreateReviewCommand(buyer.Id, order.Id, ReviewKind.Product, 4, "Útil"));
         Assert.Equal(4, review.Stars);
-        var duplicate = await Assert.ThrowsAsync<MarketException>(() => reviews.CreateAsync(buyer.Id, order.Id, ReviewKind.Product, 4, "Otra"));
+        var duplicate = await Assert.ThrowsAsync<MarketException>(() => createReview.ExecuteAsync(
+            new CreateReviewCommand(buyer.Id, order.Id, ReviewKind.Product, 4, "Otra")));
         Assert.Equal(MarketError.Conflict, duplicate.Kind);
-        var noStock = await Assert.ThrowsAsync<MarketException>(() => orders.BuyAsync(buyer.Id, product.Id, 1, true));
+        var noStock = await Assert.ThrowsAsync<MarketException>(() => placeOrder.ExecuteAsync(
+            new PlaceOrderCommand(buyer.Id, product.Id, 1, true)));
         Assert.Equal(MarketError.Conflict, noStock.Kind);
     }
 
@@ -72,26 +89,25 @@ public sealed class MarketplaceTests
     public async Task ChatHistoryRequiresParticipant()
     {
         var product = await PublishedProductAsync(2);
-        var conversation = await conversations.OpenAsync(buyer.Id, product.Id);
-        await conversations.SendAsync(buyer.Id, conversation.Id, "Hola");
-        Assert.Single(await conversations.MessagesAsync(seller.Id, conversation.Id));
-        var denied = await Assert.ThrowsAsync<MarketException>(() => conversations.MessagesAsync(admin.Id, conversation.Id));
+        var conversation = await openConversation.ExecuteAsync(new OpenConversationCommand(buyer.Id, product.Id));
+        await sendMessage.ExecuteAsync(new SendConversationMessageCommand(buyer.Id, conversation.Id, "Hola"));
+        Assert.Single(await getMessages.ExecuteAsync(new GetConversationMessagesQuery(seller.Id, conversation.Id)));
+        var denied = await Assert.ThrowsAsync<MarketException>(() => getMessages.ExecuteAsync(
+            new GetConversationMessagesQuery(admin.Id, conversation.Id)));
         Assert.Equal(MarketError.Forbidden, denied.Kind);
     }
 
     private async Task<Product> PublishedProductAsync(int stock)
     {
-        var application = await sellers.ApplyAsync(seller.Id, "Tienda", "");
-        await sellers.DecideAsync(admin.Id, application.Id, true);
-        var product = await products.SaveAsync(seller.Id, null, "Vaso", "", "Hogar", 12, stock);
-        return await products.SetStatusAsync(seller.Id, product.Id, ProductStatus.Published);
+        var application = await applyAsSeller.ExecuteAsync(new ApplyAsSellerCommand(seller.Id, "Tienda", ""));
+        await decideSellerApplication.ExecuteAsync(new DecideSellerApplicationCommand(admin.Id, application.Id, true));
+        var product = await createProduct.ExecuteAsync(new CreateProductCommand(seller.Id, Product("Vaso", 12, stock)));
+        return await changeProductStatus.ExecuteAsync(
+            new ChangeProductStatusCommand(seller.Id, product.Id, ProductStatus.Published));
     }
-}
 
-internal sealed class NoImages : IImageStore
-{
-    public Task<string> UploadAsync(Guid productId, Stream data, string contentType, CancellationToken cancellationToken) => throw new NotImplementedException();
-    public Task<(Stream Data, string ContentType)?> ReadAsync(string path, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static ProductData Product(string name, decimal price, int stock) =>
+        new(name, "", "Hogar", price, stock);
 }
 
 internal sealed class MemoryStore : IReadRepository, IWriteRepository, IUnitOfWork, IStockRepository

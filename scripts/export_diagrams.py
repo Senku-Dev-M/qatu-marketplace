@@ -56,7 +56,7 @@ edge(r, 685, 258, 805, 428, "archivo")
 save("contenedores", r)
 
 r = svg("C4 · Componentes de API")
-for x, y, w, title, desc in [(58, 145, 210, "REST", "Endpoints"), (58, 355, 210, "ChatHub", "Grupos privados"), (385, 250, 270, "Feature services", "Contratos por capacidad"), (775, 145, 270, "Repository ports", "Lectura · escritura · stock"), (775, 355, 270, "IImageStore", "Supabase Storage")]:
+for x, y, w, title, desc in [(58, 145, 210, "REST", "Endpoints"), (58, 355, 210, "ChatHub", "Grupos privados"), (385, 250, 270, "Use cases", "Comandos · consultas"), (775, 145, 270, "Repository ports", "Lectura · escritura · stock"), (775, 355, 270, "IImageStore", "Supabase Storage")]:
     node(r, x, y, w, title, desc)
 edge(r, 268, 194, 385, 299)
 edge(r, 268, 404, 385, 299)
