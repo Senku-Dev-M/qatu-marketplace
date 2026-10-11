@@ -1,6 +1,21 @@
-import { money } from "../utils/format.js";
 import { empty } from "../components/empty.js";
+import { orderCard } from "../components/orders/orderCard.js";
 
 export function ordersView(state) {
-  return `<section class="wrap inner-section"><p class="eyebrow">MI CUENTA</p><h1>Mis pedidos<span class="period">.</span></h1><p class="section-lead">Tus compras y ventas quedan registradas aquí.</p>${state.orders.length ? `<div class="order-list">${state.orders.map((order) => `<article class="order-card"><div><span class="badge badge--${order.status.toLowerCase()}">${order.status === "Paid" ? "Pagado" : order.status === "Failed" ? "Pago fallido" : "Pendiente"}</span><h3>Pedido ${order.id.slice(0, 8).toUpperCase()}</h3><p>${order.quantity} unidad(es) · ${money(order.unitPriceBob * order.quantity)}</p><small>${new Date(order.createdAt).toLocaleDateString("es-BO")}</small></div>${order.status === "Paid" && order.buyerId === state.currentUserId ? `<form class="review-form" data-order="${order.id}"><label>Calificar<select name="kind"><option value="Product">Producto</option><option value="Seller">Vendedor</option></select></label><label>Estrellas<select name="stars">${[5, 4, 3, 2, 1].map((n) => `<option value="${n}">${n} ★</option>`).join("")}</select></label><label class="grow">Comentario<input name="comment" maxlength="500" placeholder="¿Cómo fue tu experiencia?"></label><button class="button button--small" type="submit">Enviar reseña</button></form>` : ""}</article>`).join("")}</div>` : empty("Aún no tienes pedidos", "Explora el mercado y encuentra lo que necesitas.", '<a class="button" href="#/">Ver productos ↗</a>')}</section>`;
+  const content = state.orders.length
+    ? `<div class="order-list">${state.orders
+        .map((order) => orderCard(order, state.currentUserId))
+        .join("")}</div>`
+    : empty(
+        "Aún no tienes pedidos",
+        "Explora el mercado y encuentra lo que necesitas.",
+        '<a class="button" href="#/">Ver productos ↗</a>',
+      );
+
+  return `<section class="wrap inner-section">
+    <p class="eyebrow">MI CUENTA</p>
+    <h1>Mis pedidos<span class="period">.</span></h1>
+    <p class="section-lead">Tus compras y ventas quedan registradas aquí.</p>
+    ${content}
+  </section>`;
 }

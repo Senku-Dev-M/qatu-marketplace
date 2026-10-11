@@ -2,10 +2,11 @@ import { BaseViewModel } from "./BaseViewModel.js";
 import { ordersView } from "../views/ordersView.js";
 
 export class OrdersViewModel extends BaseViewModel {
-  constructor({ orders, auth, notifier, state }) {
+  constructor({ getOrders, createReview, sessionGuard, notifier, state }) {
     super();
-    this.orders = orders;
-    this.auth = auth;
+    this.getOrders = getOrders;
+    this.createReview = createReview;
+    this.sessionGuard = sessionGuard;
     this.notifier = notifier;
     this.state = {
       loading: true,
@@ -14,8 +15,8 @@ export class OrdersViewModel extends BaseViewModel {
     };
   }
   async load() {
-    if (!this.auth.requireLogin()) return;
-    this.state.orders = await this.orders.list();
+    if (!this.sessionGuard.requireLogin()) return;
+    this.state.orders = await this.getOrders.execute();
     this.state.loading = false;
     this.render();
   }
@@ -28,7 +29,7 @@ export class OrdersViewModel extends BaseViewModel {
         event.preventDefault();
         const values = Object.fromEntries(new FormData(form));
         try {
-          await this.orders.review(form.dataset.order, values);
+          await this.createReview.execute(form.dataset.order, values);
           this.notifier("Gracias por compartir tu opinión.");
           form.reset();
         } catch (error) {

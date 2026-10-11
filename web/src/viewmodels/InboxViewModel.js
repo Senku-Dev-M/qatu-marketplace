@@ -2,10 +2,24 @@ import { BaseViewModel } from "./BaseViewModel.js";
 import { inboxView } from "../views/inboxView.js";
 
 export class InboxViewModel extends BaseViewModel {
-  constructor({ conversations, auth, notifier, state }, id) {
+  constructor(
+    {
+      listConversations,
+      getConversationMessages,
+      sendConversationMessage,
+      chatConnectionFactory,
+      sessionGuard,
+      notifier,
+      state,
+    },
+    id,
+  ) {
     super();
-    this.conversations = conversations;
-    this.auth = auth;
+    this.listConversations = listConversations;
+    this.getConversationMessages = getConversationMessages;
+    this.sendConversationMessage = sendConversationMessage;
+    this.chatConnectionFactory = chatConnectionFactory;
+    this.sessionGuard = sessionGuard;
     this.notifier = notifier;
     this.state = {
       loading: true,
@@ -17,17 +31,17 @@ export class InboxViewModel extends BaseViewModel {
     this.connection = null;
   }
   async load() {
-    if (!this.auth.requireLogin()) return;
-    this.state.conversations = await this.conversations.list();
+    if (!this.sessionGuard.requireLogin()) return;
+    this.state.conversations = await this.listConversations.execute();
     if (this.state.activeId) await this.open(this.state.activeId);
     this.state.loading = false;
     this.render();
   }
   async open(id) {
     this.state.activeId = id;
-    this.state.messages = await this.conversations.messages(id);
+    this.state.messages = await this.getConversationMessages.execute(id);
     if (this.connection) await this.connection.stop();
-    this.connection = this.conversations.createConnection();
+    this.connection = this.chatConnectionFactory.create();
     this.connection.on("message", (message) => {
       if (message.conversationId !== this.state.activeId) return;
       if (!this.state.messages.some((existing) => existing.id === message.id))
@@ -71,7 +85,7 @@ export class InboxViewModel extends BaseViewModel {
         if (!text) return;
         input.value = "";
         try {
-          await this.conversations.send(this.state.activeId, text);
+          await this.sendConversationMessage.execute(this.state.activeId, text);
         } catch (error) {
           input.value = text;
           this.notifier(error.message, "error");

@@ -49,3 +49,16 @@ La prueba de imagen en borrador confirmó que la API pública responde 404 para 
 - `dotnet format Qatu.slnx --no-restore`: correcto.
 - `dotnet build Qatu.slnx --no-restore`: correcto, 0 advertencias y 0 errores.
 - `dotnet test Qatu.slnx --no-build`: 4/4 pruebas correctas usando directamente los nuevos casos de uso.
+
+## Responsabilidad única por archivo — 11-10-2026
+
+- Los archivos agrupadores de la capa de aplicación se reemplazaron por un archivo para cada comando, consulta, modelo, regla y caso de uso.
+- La API separó composición, persistencia, integración Supabase, servicios web, mapeadores de contratos, análisis de enumeraciones y serialización CSV.
+- La SPA reemplazó cinco servicios multifunción por 18 casos de uso individuales y separó componentes y controladores de UI para las pantallas complejas.
+- `dotnet build Qatu.slnx --no-restore`: correcto, 0 advertencias y 0 errores.
+- `dotnet test Qatu.slnx --no-build`: 4/4 pruebas correctas, organizadas por productos, pedidos y conversaciones.
+- `npm test`: 5/5 pruebas correctas para cliente HTTP, guardia de sesión y casos de uso del frontend.
+- `npm run build` y `npm run format:check`: correctos.
+- `npm audit --audit-level=high`: 0 vulnerabilidades después de actualizar la dependencia transitiva vulnerable.
+- API conectada a Supabase Cloud: salud correcta, clave pública configurada y catálogo con 21 productos.
+- Navegador real: catálogo, detalle de producto y pantalla de acceso cargaron correctamente sin realizar operaciones que modifican datos.

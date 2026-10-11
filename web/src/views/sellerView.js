@@ -1,13 +1,24 @@
-import { esc, money } from "../utils/format.js";
-import { empty } from "../components/empty.js";
-
-const icons = { Bebidas: "◒", Snacks: "✦", Despensa: "▥", Limpieza: "✳" };
+import { productForm } from "../components/seller/productForm.js";
+import { sellerApplication } from "../components/seller/sellerApplication.js";
+import { sellerProductList } from "../components/seller/sellerProductList.js";
+import { esc } from "../utils/format.js";
 
 export function sellerView(state) {
   const profile = state.profile;
-  if (!profile?.isSeller)
-    return `<section class="wrap seller-apply"><div><p class="eyebrow">PARA COMERCIANTES</p><h1>Abre tu puesto en Qatu<span>.</span></h1><p>Solicita ser vendedor y comparte tus productos con la comunidad. Un administrador revisará tu solicitud.</p></div><form id="seller-form" class="paper-card form-stack"><h2>Solicita tu espacio</h2><label>Nombre de tu tienda<input name="shopName" required maxlength="80" placeholder="Ej. Katu de la Esquina"></label><label>Cuéntanos qué ofreces<textarea name="description" rows="4" maxlength="500" placeholder="Bebidas, abarrotes, artículos del hogar..."></textarea></label><button class="button button--dark" type="submit">Enviar solicitud ↗</button></form></section>`;
-  return `<section class="wrap inner-section"><div class="heading-row"><div><p class="eyebrow">ESPACIO VENDEDOR</p><h1>Mi tienda<span class="period">.</span></h1><p class="section-lead">${esc(state.shop?.name || "Tu espacio en Qatu")}</p></div><span class="shop-seal">QATU<br>VENDEDOR ✳</span></div>
-    <div class="seller-columns"><form id="product-form" class="paper-card form-stack"><h2>${state.editing ? "Editar producto" : "Nuevo producto"}</h2><input type="hidden" name="id" value="${esc(state.editing?.id || "")}"><label>Nombre comercial<input name="name" required maxlength="120" value="${esc(state.editing?.name || "")}" placeholder="Ej. Coca-Cola Original"></label><div class="form-pair"><label>Marca<input name="brand" maxlength="80" value="${esc(state.editing?.brand || "")}" placeholder="Ej. Coca-Cola"></label><label>Presentación<input name="presentation" maxlength="60" value="${esc(state.editing?.presentation || "")}" placeholder="Ej. 500 ml"></label></div><label>Descripción<textarea name="description" rows="3" required placeholder="Describe el producto brevemente">${esc(state.editing?.description || "")}</textarea></label><div class="form-pair"><label>Categoría<select name="category">${["Bebidas", "Snacks", "Despensa", "Limpieza", "Otros"].map((c) => `<option ${state.editing?.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></label><label>Unidad<select name="unit">${["botella", "lata", "paquete", "bolsa", "tubo", "tableta", "unidad"].map((unit) => `<option ${state.editing?.unit === unit ? "selected" : ""}>${unit}</option>`).join("")}</select></label></div><div class="form-pair"><label>Precio (Bs)<input name="priceBob" type="number" step="0.01" min="0.01" required value="${esc(state.editing?.priceBob || "")}"></label><label>Existencias<input name="stock" type="number" min="0" required value="${esc(state.editing?.stock ?? 1)}"></label></div><button class="button button--dark" type="submit">Guardar producto ↗</button>${state.editing ? '<button id="cancel-edit" class="link-button" type="button">Cancelar edición</button>' : ""}</form>
-    <div><h2 class="list-title">Tus productos <span>${state.products.length}</span></h2>${state.products.length ? `<div class="seller-products">${state.products.map((p) => `<article class="seller-product"><div class="seller-product-icon">${icons[p.category] || "✦"}</div><div class="seller-product-main"><h3>${esc(p.name)}</h3><p>${esc(p.brand || p.category)} · ${esc(p.presentation || p.unit || "unidad")}</p><p>${money(p.priceBob)} · ${p.stock} disponibles</p><small>${p.status === "Published" ? "Publicado" : p.status === "Hidden" ? "Oculto" : "Borrador"}</small></div><div class="seller-product-actions"><button type="button" data-edit="${p.id}">Editar</button><button type="button" data-status="${p.id}" data-next="${p.status === "Published" ? "Hidden" : "Published"}">${p.status === "Published" ? "Ocultar" : "Publicar"}</button><label class="upload-label">Imagen<input type="file" accept="image/png,image/jpeg,image/webp" data-upload="${p.id}"></label></div></article>`).join("")}</div>` : empty("Comienza con tu primer producto", "Completa el formulario para crear tu catálogo.")}</div></div></section>`;
+  if (!profile?.isSeller) return sellerApplication();
+
+  return `<section class="wrap inner-section">
+    <div class="heading-row">
+      <div>
+        <p class="eyebrow">ESPACIO VENDEDOR</p>
+        <h1>Mi tienda<span class="period">.</span></h1>
+        <p class="section-lead">${esc(state.shop?.name || "Tu espacio en Qatu")}</p>
+      </div>
+      <span class="shop-seal">QATU<br>VENDEDOR ✳</span>
+    </div>
+    <div class="seller-columns">
+      ${productForm(state.editing)}
+      ${sellerProductList(state.products)}
+    </div>
+  </section>`;
 }

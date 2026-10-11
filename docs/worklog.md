@@ -37,3 +37,7 @@ El servicio general de marketplace se reemplazó por contratos y servicios por c
 ## Casos de uso explícitos — 08-10-2026
 
 La capa de aplicación evolucionó de servicios con varias operaciones a comandos, consultas y una clase por caso de uso. Los endpoints ahora expresan directamente la intención que ejecutan —por ejemplo, crear un pedido, consultar el catálogo o aprobar un vendedor— mediante `ExecuteAsync`. Las políticas de acceso reutilizan las reglas de usuario, producto y conversación sin volver a introducir servicios generales. Se conservaron las rutas HTTP, los contratos de respuesta y los puertos hacia infraestructura.
+
+## Responsabilidad única por archivo — 11-10-2026
+
+Se eliminó el agrupamiento residual de varios casos de uso, comandos, modelos y reglas en archivos por funcionalidad. El backend ahora mantiene una unidad de responsabilidad por archivo y separa también la configuración de dependencias, mapeadores de entrada, serialización y manejo de excepciones. En la SPA, los servicios con múltiples acciones se reemplazaron por casos de uso individuales; las vistas de catálogo, producto, vendedor, pedidos, administración y mensajes delegan sus secciones a componentes pequeños, y los enlaces DOM complejos del vendedor se movieron a controladores específicos. Las pruebas se organizaron por funcionalidad con soporte reutilizable.

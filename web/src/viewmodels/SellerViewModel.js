@@ -1,11 +1,29 @@
 import { BaseViewModel } from "./BaseViewModel.js";
+import { bindProductActions } from "../controllers/seller/bindProductActions.js";
+import { bindProductEditor } from "../controllers/seller/bindProductEditor.js";
+import { bindSellerApplication } from "../controllers/seller/bindSellerApplication.js";
 import { sellerView } from "../views/sellerView.js";
 
 export class SellerViewModel extends BaseViewModel {
-  constructor({ seller, state, auth, notifier }) {
+  constructor({
+    applyAsSeller,
+    loadSellerWorkspace,
+    createProduct,
+    updateProduct,
+    changeProductStatus,
+    uploadProductImage,
+    sessionGuard,
+    state,
+    notifier,
+  }) {
     super();
-    this.seller = seller;
-    this.auth = auth;
+    this.applyAsSeller = applyAsSeller;
+    this.loadSellerWorkspace = loadSellerWorkspace;
+    this.createProduct = createProduct;
+    this.updateProduct = updateProduct;
+    this.changeProductStatus = changeProductStatus;
+    this.uploadProductImage = uploadProductImage;
+    this.sessionGuard = sessionGuard;
     this.notifier = notifier;
     this.state = {
       loading: true,
@@ -16,9 +34,9 @@ export class SellerViewModel extends BaseViewModel {
     };
   }
   async load() {
-    if (!this.auth.requireLogin()) return;
+    if (!this.sessionGuard.requireLogin()) return;
     if (this.state.profile?.isSeller) {
-      Object.assign(this.state, await this.seller.workspace());
+      Object.assign(this.state, await this.loadSellerWorkspace.execute());
     }
     this.state.loading = false;
     this.render();
@@ -27,76 +45,26 @@ export class SellerViewModel extends BaseViewModel {
     return sellerView(this.state);
   }
   bind() {
-    const sellerForm = this.el.querySelector("#seller-form");
-    if (sellerForm)
-      sellerForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const data = Object.fromEntries(new FormData(sellerForm));
-        try {
-          await this.seller.apply(data);
-          this.notifier("Solicitud enviada. Un administrador la revisará.");
-          sellerForm.reset();
-        } catch (error) {
-          this.notifier(error.message, "error");
-        }
-      });
-    const productForm = this.el.querySelector("#product-form");
-    if (!productForm) return;
-    productForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const data = Object.fromEntries(new FormData(productForm));
-      const id = data.id;
-      delete data.id;
-      data.priceBob = Number(data.priceBob);
-      data.stock = Number(data.stock);
-      try {
-        await this.seller.save(id, data);
-        this.notifier("Producto guardado.");
-        this.state.editing = null;
-        await this.load();
-      } catch (error) {
-        this.notifier(error.message, "error");
-      }
+    bindSellerApplication({
+      root: this.el,
+      applyAsSeller: this.applyAsSeller,
+      notifier: this.notifier,
     });
-    this.el.querySelector("#cancel-edit")?.addEventListener("click", () => {
-      this.state.editing = null;
-      this.render();
+    bindProductEditor({
+      root: this.el,
+      state: this.state,
+      createProduct: this.createProduct,
+      updateProduct: this.updateProduct,
+      notifier: this.notifier,
+      render: () => this.render(),
+      reload: () => this.load(),
     });
-    this.el.querySelectorAll("[data-edit]").forEach((button) =>
-      button.addEventListener("click", () => {
-        this.state.editing = this.state.products.find(
-          (product) => product.id === button.dataset.edit,
-        );
-        this.render();
-        this.el
-          .querySelector("#product-form")
-          ?.scrollIntoView({ behavior: "smooth" });
-      }),
-    );
-    this.el.querySelectorAll("[data-status]").forEach((button) =>
-      button.addEventListener("click", async () => {
-        try {
-          await this.seller.setStatus(
-            button.dataset.status,
-            button.dataset.next,
-          );
-          await this.load();
-        } catch (error) {
-          this.notifier(error.message, "error");
-        }
-      }),
-    );
-    this.el.querySelectorAll("[data-upload]").forEach((input) =>
-      input.addEventListener("change", async () => {
-        if (!input.files[0]) return;
-        try {
-          await this.seller.uploadImage(input.dataset.upload, input.files[0]);
-          this.notifier("Imagen subida.");
-          await this.load();
-        } catch (error) {
-          this.notifier(error.message, "error");
-        }
-      }),
-    );
+    bindProductActions({
+      root: this.el,
+      changeProductStatus: this.changeProductStatus,
+      uploadProductImage: this.uploadProductImage,
+      notifier: this.notifier,
+      reload: () => this.load(),
+    });
   }
 }

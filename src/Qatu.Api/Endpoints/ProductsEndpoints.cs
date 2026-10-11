@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using Qatu.Api.Contracts;
+using Qatu.Api.Mappers;
+using Qatu.Api.Parsing;
 using Qatu.Application;
 using Qatu.Domain;
 
@@ -13,14 +15,14 @@ public static class ProductsEndpoints
             useCase.ExecuteAsync(user.Id()));
 
         secured.MapPost("/products", (ClaimsPrincipal user, ProductInput input, CreateProductUseCase useCase) =>
-            useCase.ExecuteAsync(new CreateProductCommand(user.Id(), ToProductData(input))));
+            useCase.ExecuteAsync(new CreateProductCommand(user.Id(), input.ToProductData())));
 
         secured.MapPut("/products/{id:guid}", (
             ClaimsPrincipal user,
             Guid id,
             ProductInput input,
             UpdateProductUseCase useCase) =>
-            useCase.ExecuteAsync(new UpdateProductCommand(user.Id(), id, ToProductData(input))));
+            useCase.ExecuteAsync(new UpdateProductCommand(user.Id(), id, input.ToProductData())));
 
         secured.MapPost("/products/{id:guid}/status", (
             ClaimsPrincipal user,
@@ -28,7 +30,7 @@ public static class ProductsEndpoints
             ProductStatusInput input,
             ChangeProductStatusUseCase useCase) =>
         {
-            if (!Enum.TryParse<ProductStatus>(input.Status, true, out var status) || !Enum.IsDefined(status)) throw new MarketException(MarketError.Invalid, "Estado de producto inválido.");
+            var status = ContractParser.ParseEnum<ProductStatus>(input.Status, "Estado de producto inválido.");
             return useCase.ExecuteAsync(new ChangeProductStatusCommand(user.Id(), id, status));
         });
 
@@ -46,14 +48,4 @@ public static class ProductsEndpoints
                 cancellationToken);
         }).DisableAntiforgery();
     }
-
-    private static ProductData ToProductData(ProductInput input) => new(
-        input.Name,
-        input.Description,
-        input.Category,
-        input.PriceBob,
-        input.Stock,
-        input.Brand,
-        input.Presentation,
-        input.Unit);
 }

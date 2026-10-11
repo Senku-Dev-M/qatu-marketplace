@@ -155,11 +155,14 @@ python scripts/test_signalr.py
 
 ```text
 src/Qatu.Domain/           Domain entities and enums
-src/Qatu.Application/      Commands, queries, use cases, policies, and ports
+src/Qatu.Application/      One command, query, model, rule, or use case per file
 src/Qatu.Infrastructure/   EF Core, repositories, migrations, and image storage
-src/Qatu.Api/              REST endpoints, authentication, configuration, and SignalR
-web/src/                   SPA views, view models, components, state, and styles
-tests/Qatu.Tests/          Automated backend tests
+src/Qatu.Api/              REST endpoints, contracts, mappers, configuration, and SignalR
+web/src/usecases/          One frontend application operation per file
+web/src/viewmodels/        Screen state and presentation coordination
+web/src/components/        Small reusable rendering functions grouped by screen
+web/src/controllers/       DOM event bindings separated from ViewModels
+tests/Qatu.Tests/          Backend tests and reusable test support by feature
 infra/hosted/              API/web deployment connected to Supabase Cloud
 scripts/                   Demo seed and integration-test helpers
 docs/                      Architecture and project documentation
@@ -170,11 +173,11 @@ docs/                      Architecture and project documentation
 The backend follows Clean Architecture dependency rules:
 
 - **Domain** contains entities and business enums without framework dependencies.
-- **Application** exposes one explicit use case per business action (`PlaceOrderUseCase`, `ApplyAsSellerUseCase`, and the other commands and queries), reusable access policies, and small persistence ports for reads, writes, transactions, and stock operations.
+- **Application** exposes one explicit use case per business action (`PlaceOrderUseCase`, `ApplyAsSellerUseCase`, and the other commands and queries). Every command, query, DTO-like model, business rule, policy, and use-case class has its own file. Persistence is represented through small ports for reads, writes, transactions, and stock operations.
 - **Infrastructure** implements those ports with Entity Framework Core and Supabase Storage.
-- **API** is the composition root. Each endpoint depends only on the use case it executes, while authentication delegates profile creation and access checks to the application layer.
+- **API** is the composition root. Each endpoint depends only on the use case it executes; request contracts, input mapping, CSV serialization, dependency registration, and exception handling are separate concerns.
 
-The frontend follows MVVM with explicit dependency injection. Pure view functions render only the state passed by their ViewModel. ViewModels coordinate UI behavior through feature services, and `createApplication.js` is the single composition root for API, authentication, state, navigation, and notifications. `ViewModelFactory` owns route-to-ViewModel creation, keeping `main.js` limited to application startup and lifecycle management.
+The frontend follows MVVM with explicit dependency injection. Pure view functions render only the state passed by their ViewModel and delegate complex sections to small components. Each application action, such as searching the catalog, creating a product, or sending a message, is implemented in its own use-case file. ViewModels coordinate screen state, while dedicated controllers own complex DOM event binding. `createApplication.js` remains the composition root and `ViewModelFactory` owns route-to-ViewModel creation.
 
 ## Security notes
 

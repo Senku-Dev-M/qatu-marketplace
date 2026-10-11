@@ -2,9 +2,9 @@ import { BaseViewModel } from "./BaseViewModel.js";
 import { catalogView } from "../views/catalogView.js";
 
 export class CatalogViewModel extends BaseViewModel {
-  constructor({ catalog, notifier }) {
+  constructor({ searchCatalog, notifier }) {
     super();
-    this.catalog = catalog;
+    this.searchCatalog = searchCatalog;
     this.notifier = notifier;
     this.state = { loading: true, products: [], query: "", category: "Todo" };
   }
@@ -12,7 +12,7 @@ export class CatalogViewModel extends BaseViewModel {
     await this.fetchProducts();
   }
   async fetchProducts() {
-    this.state.products = await this.catalog.search(
+    this.state.products = await this.searchCatalog.execute(
       this.state.query,
       this.state.category,
     );

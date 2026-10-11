@@ -2,16 +2,26 @@ import { BaseViewModel } from "./BaseViewModel.js";
 import { adminView } from "../views/adminView.js";
 
 export class AdminViewModel extends BaseViewModel {
-  constructor({ admin, auth, notifier }) {
+  constructor({
+    loadAdminDashboard,
+    decideSellerApplication,
+    downloadAdminReport,
+    sessionGuard,
+    notifier,
+  }) {
     super();
-    this.admin = admin;
-    this.auth = auth;
+    this.loadAdminDashboard = loadAdminDashboard;
+    this.decideSellerApplication = decideSellerApplication;
+    this.downloadAdminReport = downloadAdminReport;
+    this.sessionGuard = sessionGuard;
     this.notifier = notifier;
     this.state = { loading: true, report: null, applications: [] };
   }
   async load() {
-    if (!this.auth.requireLogin()) return;
-    Object.assign(this.state, await this.admin.dashboard(), { loading: false });
+    if (!this.sessionGuard.requireLogin()) return;
+    Object.assign(this.state, await this.loadAdminDashboard.execute(), {
+      loading: false,
+    });
     this.render();
   }
   template() {
@@ -21,7 +31,7 @@ export class AdminViewModel extends BaseViewModel {
     this.el.querySelectorAll("[data-decision]").forEach((button) =>
       button.addEventListener("click", async () => {
         try {
-          await this.admin.decide(
+          await this.decideSellerApplication.execute(
             button.dataset.decision,
             button.dataset.approve === "true",
           );
@@ -37,7 +47,9 @@ export class AdminViewModel extends BaseViewModel {
       .addEventListener("click", async (event) => {
         event.preventDefault();
         try {
-          const url = URL.createObjectURL(await this.admin.downloadReport());
+          const url = URL.createObjectURL(
+            await this.downloadAdminReport.execute(),
+          );
           const link = document.createElement("a");
           link.href = url;
           link.download = "qatu-ventas.csv";

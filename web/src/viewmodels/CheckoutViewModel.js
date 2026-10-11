@@ -2,11 +2,15 @@ import { BaseViewModel } from "./BaseViewModel.js";
 import { checkoutView } from "../views/checkoutView.js";
 
 export class CheckoutViewModel extends BaseViewModel {
-  constructor({ catalog, orders, auth, navigate, notifier }, id, query) {
+  constructor(
+    { getProductDetails, placeOrder, sessionGuard, navigate, notifier },
+    id,
+    query,
+  ) {
     super();
-    this.catalog = catalog;
-    this.orders = orders;
-    this.auth = auth;
+    this.getProductDetails = getProductDetails;
+    this.placeOrder = placeOrder;
+    this.sessionGuard = sessionGuard;
     this.navigate = navigate;
     this.notifier = notifier;
     this.id = id;
@@ -17,8 +21,8 @@ export class CheckoutViewModel extends BaseViewModel {
     };
   }
   async load() {
-    if (!this.auth.requireLogin()) return;
-    const result = await this.catalog.product(this.id);
+    if (!this.sessionGuard.requireLogin()) return;
+    const result = await this.getProductDetails.execute(this.id);
     this.state.product = result.product;
     this.state.loading = false;
     this.render();
@@ -33,7 +37,11 @@ export class CheckoutViewModel extends BaseViewModel {
     ]) {
       this.el.querySelector(button).addEventListener("click", async () => {
         try {
-          await this.orders.buy(this.id, this.state.quantity, paymentSucceeds);
+          await this.placeOrder.execute(
+            this.id,
+            this.state.quantity,
+            paymentSucceeds,
+          );
           this.notifier(
             paymentSucceeds
               ? "Compra simulada confirmada."

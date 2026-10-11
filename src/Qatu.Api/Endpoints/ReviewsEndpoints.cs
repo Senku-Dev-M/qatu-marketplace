@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Qatu.Api.Contracts;
+using Qatu.Api.Parsing;
 using Qatu.Application;
 using Qatu.Domain;
 
@@ -14,7 +15,7 @@ public static class ReviewsEndpoints
 
         secured.MapPost("/reviews", (ClaimsPrincipal user, ReviewInput input, CreateReviewUseCase useCase) =>
         {
-            if (!Enum.TryParse<ReviewKind>(input.Kind, true, out var kind) || !Enum.IsDefined(kind)) throw new MarketException(MarketError.Invalid, "Tipo de calificación inválido.");
+            var kind = ContractParser.ParseEnum<ReviewKind>(input.Kind, "Tipo de calificación inválido.");
             return useCase.ExecuteAsync(new CreateReviewCommand(
                 user.Id(),
                 input.OrderId,
